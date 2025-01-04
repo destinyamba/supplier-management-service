@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "3.2.3"
-	id("io.spring.dependency-management") version "1.1.4"
+	id("org.springframework.boot") version "3.4.0"
+	id("io.spring.dependency-management") version "1.1.6"
 	kotlin("jvm") version "1.9.22"
 	kotlin("plugin.spring") version "1.9.22"
 }
@@ -44,6 +44,18 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
+
+	// Auth0
+	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("com.okta.spring:okta-spring-boot-starter:3.0.7")
+	implementation("org.springframework.security:spring-security-oauth2-client:6.4.2")
+	implementation("org.springframework.security:spring-security-oauth2-resource-server:6.4.2")
+	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+	// Others
+	implementation("org.springframework:spring-context:6.2.1")
+
 }
 
 tasks.withType<KotlinCompile> {

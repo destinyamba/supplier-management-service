@@ -1,0 +1,8 @@
+okta:
+  oauth2:
+    issuer: "https://dev-wq7kgbrb43seerv2.us.auth0.com/"
+    audience: "https://zenflouu.api.com"
+    client-id: "nMDN4TYS8aFzWESzyqPXYqJFgxh7aKp5"
+    client-secret: "1OguxXqh4rgCytHrWToxqzAeF0OkCCH_B3lhG9IwCfNsgmxz8Qtg1ollANwRosPM"
+server:
+  port: 6060
