@@ -55,6 +55,7 @@ dependencies {
 
 	// Others
 	implementation("org.springframework:spring-context:6.2.1")
+	implementation("io.github.cdimascio:dotenv-java:3.0.0")
 
 }
 

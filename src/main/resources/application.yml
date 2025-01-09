@@ -1,8 +1,22 @@
-okta:
-  oauth2:
-    issuer: "https://dev-wq7kgbrb43seerv2.us.auth0.com/"
-    audience: "https://zenflouu.api.com"
-    client-id: "nMDN4TYS8aFzWESzyqPXYqJFgxh7aKp5"
-    client-secret: "1OguxXqh4rgCytHrWToxqzAeF0OkCCH_B3lhG9IwCfNsgmxz8Qtg1ollANwRosPM"
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OKTA_OAUTH2_ISSUER}
+          audience: ${OKTA_OAUTH2_AUDIENCE}
+
+application:
+  client-origin-url: ${CLIENT_ORIGIN_URL}
+
 server:
-  port: 6060
+  error:
+    whitelabel:
+      enabled: false
+  port: ${PORT}
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
