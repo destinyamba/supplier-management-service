@@ -56,7 +56,9 @@ dependencies {
 	// Others
 	implementation("org.springframework:spring-context:6.2.1")
 	implementation("io.github.cdimascio:dotenv-java:3.0.0")
-
+	implementation("org.springframework.boot:spring-boot-starter-webflux")
+	implementation("io.projectreactor.netty:reactor-netty")
+	implementation("io.netty:netty-resolver-dns:4.1.76.Final")
 }
 
 tasks.withType<KotlinCompile> {

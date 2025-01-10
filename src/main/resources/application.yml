@@ -5,6 +5,8 @@ spring:
         jwt:
           issuer-uri: ${OKTA_OAUTH2_ISSUER}
           audience: ${OKTA_OAUTH2_AUDIENCE}
+          client-id: ${OKTA_OAUTH2_CLIENT_ID}
+          client-secret: ${OKTA_OAUTH2_CLIENT_SECRET}
 
 application:
   client-origin-url: ${CLIENT_ORIGIN_URL}
@@ -20,3 +22,6 @@ server:
   web:
     resources:
       add-mappings: false
+  logging:
+    level:
+      org.springframework.web.reactive.function.client: DEBUG
