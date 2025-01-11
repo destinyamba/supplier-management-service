@@ -20,7 +20,7 @@ class SecurityConfig(private val authenticationErrorHandler: AuthenticationError
         return http
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/api/messages/private", "/api/messages/admin", "/api/users").authenticated()
+                    .requestMatchers("/api/users/").authenticated()
                     .anyRequest().permitAll()
             }
             .cors(Customizer.withDefaults())
