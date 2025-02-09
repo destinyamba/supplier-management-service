@@ -1,0 +1,32 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://destiny:nojKSRsW9qI0pKtl@cluster0.b0dfc.mongodb.net/zenflouu-api-db
+      database: zenflouu-api-db
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OKTA_OAUTH2_ISSUER}
+          audience: ${OKTA_OAUTH2_AUDIENCE}
+          client-id: ${OKTA_OAUTH2_CLIENT_ID}
+          client-secret: ${OKTA_OAUTH2_CLIENT_SECRET}
+
+application:
+  client-origin-url: ${CLIENT_ORIGIN_URL}
+
+server:
+  error:
+    whitelabel:
+      enabled: false
+  port: ${PORT}
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+  logging:
+    level:
+      org.springframework.web.reactive.function.client: DEBUG
+      org.springframework.data.mongodb.core.MongoTemplate: DEBUG

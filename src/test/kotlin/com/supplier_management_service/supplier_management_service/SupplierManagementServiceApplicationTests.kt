@@ -8,6 +8,7 @@ class SupplierManagementServiceApplicationTests {
 
 	@Test
 	fun contextLoads() {
+
 	}
 
 }
