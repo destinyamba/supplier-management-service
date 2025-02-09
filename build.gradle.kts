@@ -31,8 +31,6 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
-	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -53,12 +51,27 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
+	// JWT
+	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
+	// Email
+	implementation("org.springframework.boot:spring-boot-starter-mail")
+
+	// SendGrid
+	implementation("com.sendgrid:sendgrid-java:5.0.0-rc.1")
+
 	// Others
 	implementation("org.springframework:spring-context:6.2.1")
 	implementation("io.github.cdimascio:dotenv-java:3.0.0")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("io.projectreactor.netty:reactor-netty")
 	implementation("io.netty:netty-resolver-dns:4.1.76.Final")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.hateoas:spring-hateoas")
+	implementation("org.springframework.data:spring-data-commons")
+//	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 }
 
 tasks.withType<KotlinCompile> {

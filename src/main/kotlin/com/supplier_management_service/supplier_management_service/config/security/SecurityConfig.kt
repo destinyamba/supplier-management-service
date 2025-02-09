@@ -1,49 +1,58 @@
 package com.supplier_management_service.supplier_management_service.config.security
 
+import com.supplier_management_service.supplier_management_service.services.UserDetailsServiceImpl
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.Customizer
+import org.springframework.http.HttpMethod
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
+@EnableWebSecurity
 @EnableMethodSecurity
-class SecurityConfig(private val authenticationErrorHandler: AuthenticationErrorHandler) {
+class SecurityConfig(
+    private val userDetailsService: UserDetailsServiceImpl
+) {
 
     @Bean
-    @Throws(Exception::class)
-    fun httpSecurity(http: HttpSecurity): SecurityFilterChain {
-        return http
-            .authorizeHttpRequests { auth ->
-                auth
-                    .requestMatchers("/api/users/").authenticated()
-                    .anyRequest().permitAll()
-            }
-            .cors(Customizer.withDefaults())
-            .oauth2ResourceServer { oauth2: OAuth2ResourceServerConfigurer<HttpSecurity?> ->
-                oauth2
-                    .jwt { jwt ->
-                        jwt.jwtAuthenticationConverter(
-                            makePermissionsConverter()
-                        )
-                    }
-                    .authenticationEntryPoint(authenticationErrorHandler)
-            }
-            .build()
+    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
+    
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val configuration = CorsConfiguration()
+        configuration.allowedOrigins = listOf("http://localhost:3000", "  \"https://dev-wq7kgbrb43seerv2.us.auth0.com\"")
+        configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        configuration.allowedHeaders = listOf("*")
+        configuration.allowCredentials = true
+
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", configuration)
+        return source
     }
 
-    private fun makePermissionsConverter(): JwtAuthenticationConverter {
-        val jwtAuthoritiesConverter = JwtGrantedAuthoritiesConverter()
-        jwtAuthoritiesConverter.setAuthoritiesClaimName("permissions")
-        jwtAuthoritiesConverter.setAuthorityPrefix("")
+    @Bean
+    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+        http
+            .cors { it.configurationSource(corsConfigurationSource()) }
+            .csrf { it.disable() }
+            .authorizeHttpRequests {
+                it.requestMatchers("/api/v1/auth/**", "api/v1/**").permitAll()
+                it.anyRequest().authenticated()
+            }
+            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+        return http.build()
+    }
 
-        val jwtAuthConverter = JwtAuthenticationConverter()
-        jwtAuthConverter.setJwtGrantedAuthoritiesConverter(jwtAuthoritiesConverter)
-
-        return jwtAuthConverter
+    fun configure(auth: AuthenticationManagerBuilder) {
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder())
     }
 }
