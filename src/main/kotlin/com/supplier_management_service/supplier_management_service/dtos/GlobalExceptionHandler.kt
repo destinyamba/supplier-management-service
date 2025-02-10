@@ -1,4 +1,4 @@
-package com.supplier_management_service.supplier_management_service.exceptions
+package com.supplier_management_service.supplier_management_service.dtos
 
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.ResponseEntity

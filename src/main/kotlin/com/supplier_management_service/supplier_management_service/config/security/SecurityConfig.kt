@@ -29,7 +29,8 @@ class SecurityConfig(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("http://localhost:3000", "  \"https://dev-wq7kgbrb43seerv2.us.auth0.com\"")
+//        configuration.allowedOrigins = listOf("http://localhost:3000", "  \"https://dev-wq7kgbrb43seerv2.us.auth0.com\"")
+        configuration.allowedOrigins = listOf("http://localhost:3000")
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true
@@ -45,7 +46,8 @@ class SecurityConfig(
             .cors { it.configurationSource(corsConfigurationSource()) }
             .csrf { it.disable() }
             .authorizeHttpRequests {
-                it.requestMatchers("/api/v1/auth/**", "api/v1/**").permitAll()
+                it.requestMatchers("/api/v1/auth/**", "api/v1/**", "/api/v1/supplier/**").permitAll()
+//                it.requestMatchers("/api/v1/supplier/**").hasAnyAuthority("ADMIN", "EDITOR", "CONTRIBUTOR")
                 it.anyRequest().authenticated()
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }

@@ -20,6 +20,7 @@ data class Supplier(
     val contactInfo: ContactInfo,
     val businessClassifications: List<String> = emptyList(),
     val safetyAndCompliance: SafetyAndCompliance,
+    val isDiscoverable: Boolean = false,
 )
 
 data class ContactInfo(
@@ -29,10 +30,10 @@ data class ContactInfo(
 data class SafetyAndCompliance(
     val trir: Double,
     val emr: Double,
-    val coi: String,
-    val safetyProgram: String,
-    val oshaLogs: String,
-    val bankInfo: String
+    var coiUrl: String? = null,
+    var safetyProgramUrl: String? = null,
+    var oshaLogsUrl: String? = null,
+    var bankInfoUrl: String? = null,
 )
 
 enum class WorkStatus {
