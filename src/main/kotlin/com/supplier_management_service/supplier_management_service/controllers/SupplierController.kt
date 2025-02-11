@@ -19,9 +19,9 @@ class SupplierController(
 ) {
     private val logger = LoggerFactory.getLogger(SupplierController::class.java)
 
-    //    @PreAuthorize("hasAnyAuthority('ADMIN', 'EDITOR', 'CONTRIBUTOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EDITOR')")
     @PostMapping("/onboard-supplier", consumes = ["multipart/form-data"])
-    fun onboardSupplierv2(
+    fun onboardSupplier(
         @RequestParam("supplierData") supplierJson: String,
         @RequestParam("coi", required = false) coi: MultipartFile?,
         @RequestParam("safetyProgram", required = false) safetyProgram: MultipartFile?,
@@ -36,7 +36,6 @@ class SupplierController(
                 "oshaLogs" to oshaLogs,
                 "bankInfo" to bankInfo
             ).filterValues { it != null }
-
             val supplier = supplierOnboardingService.onboardSupplier(supplierJson, files)
             ResponseEntity(supplier, HttpStatus.CREATED)
         } catch (e: RuntimeException) {
@@ -44,7 +43,7 @@ class SupplierController(
         }
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'EDITOR', 'CONTRIBUTOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EDITOR')")
     @GetMapping("/all")
     fun allPatients(
         @RequestParam(required = false, defaultValue = "1") pageNum: Int,
@@ -60,7 +59,7 @@ class SupplierController(
         }
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'EDITOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EDITOR')")
     @DeleteMapping("/{id}")
     fun deleteSupplier(@PathVariable id: String): ResponseEntity<Void> {
         return try {
@@ -71,7 +70,7 @@ class SupplierController(
         }
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'EDITOR', 'CONTRIBUTOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EDITOR')")
     @GetMapping("/{id}")
     fun getSupplier(@PathVariable id: String): ResponseEntity<Supplier> {
         return try {

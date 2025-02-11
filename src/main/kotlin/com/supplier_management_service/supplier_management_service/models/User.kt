@@ -11,7 +11,7 @@ data class User(
     val email: String,
     var password: String,
     val name: String,
-    val role: Role? = Role.ADMIN,
+    val role: Role,
     val businessType: BusinessType,
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val lastSignIn: LocalDateTime = LocalDateTime.now(),

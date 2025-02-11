@@ -58,7 +58,7 @@ class SupplierOnboardingService(
         return supplierRepository.save(supplier)
     }
 
-    // update onboardSupplier to upload files to S3 bucket and save file links to mongodb.
+    // update onboardSupplier to upload files to azure blob storage and save file links to mongodb.
     fun onboardSupplier(supplierJson: String, files: Map<String, MultipartFile?>): Supplier {
         val supplierDto = objectMapper.readValue(supplierJson, Supplier::class.java)
         val savedSupplier = supplierRepository.save(supplierDto)
@@ -88,12 +88,12 @@ class SupplierOnboardingService(
         val supplier = supplierRepository.findById(id).orElseThrow()
 
         // Delete all associated files
-        listOf(
+        listOfNotNull(
             supplier.safetyAndCompliance.coiUrl,
             supplier.safetyAndCompliance.safetyProgramUrl,
             supplier.safetyAndCompliance.oshaLogsUrl,
             supplier.safetyAndCompliance.bankInfoUrl
-        ).filterNotNull().forEach { azureBlobStorageService.deleteFile(it) }
+        ).forEach { azureBlobStorageService.deleteFile(it) }
 
         supplierRepository.deleteById(id)
     }

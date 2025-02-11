@@ -1,5 +1,6 @@
 package com.supplier_management_service.supplier_management_service.services
 
+import com.supplier_management_service.supplier_management_service.config.security.JwtUtil
 import com.supplier_management_service.supplier_management_service.dtos.request.PasswordResetToken
 import com.supplier_management_service.supplier_management_service.dtos.request.SigninRequest
 import com.supplier_management_service.supplier_management_service.exceptions.EmailAlreadyExistsException
@@ -18,6 +19,10 @@ import org.apache.coyote.BadRequestException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.security.Key
@@ -28,6 +33,7 @@ import java.util.UUID
 
 @Service
 class AuthService(
+    private val jwtUtil: JwtUtil,
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
     private val emailService: EmailService,
@@ -57,7 +63,7 @@ class AuthService(
             id = savedUser.id!!,
             email = savedUser.email,
             name = savedUser.name,
-            role = savedUser.role ?: Role.ADMIN,
+            role = savedUser.role,
             businessType = savedUser.businessType,
             createdAt = savedUser.createdAt,
             lastSignIn = savedUser.lastSignIn
@@ -65,6 +71,7 @@ class AuthService(
     }
 
     fun signin(request: SigninRequest): SigninResponse {
+        logger.info("Signin request received: ${request.email}")
         val user = userRepository.findByEmail(request.email)
             ?: throw InvalidCredentialsException("Invalid email or password")
 
@@ -79,7 +86,7 @@ class AuthService(
             id = user.id!!,
             email = user.email,
             name = user.name,
-            role = user.role ?: Role.ADMIN,
+            role = user.role,
             businessType = user.businessType,
             token = token
         )
@@ -123,19 +130,44 @@ class AuthService(
         passwordResetTokenRepository.delete(resetToken)
     }
 
+    fun loadUserByUsername(username: String): UserDetails {
+        val user = userRepository.findByEmail(username)
+            ?: throw UsernameNotFoundException("User not found with email: $username")
+
+        return org.springframework.security.core.userdetails.User(
+            user.email,
+            user.password,
+            user.getAuthorities()
+        )
+    }
+
+    private fun User.getAuthorities(): Collection<GrantedAuthority> {
+        return listOf(SimpleGrantedAuthority("ROLE_${role.name}"))  // Using ROLE_ prefix
+    }
+
     private fun validateSignupRequest(request: SignupRequest) {
         if (userRepository.existsByEmail(request.email)) {
             throw EmailAlreadyExistsException("Email ${request.email} is already in use")
         }
     }
 
-    private fun generateToken(user: User): String {
-        return Jwts.builder()
-            .setSubject(user.email)
-            .setIssuedAt(Date())
-            .setExpiration(Date(System.currentTimeMillis() + jwtExpirationMs))
-            .signWith(jwtSecretKey, SignatureAlgorithm.HS256)
-            .compact()
+//    private fun generateToken(user: User): String {
+//        return Jwts.builder()
+//            .setSubject(user.email)
+//            .claim("role", user.role.toString())
+//            .setIssuedAt(Date())
+//            .setExpiration(Date(System.currentTimeMillis() + jwtExpirationMs))
+//            .signWith(jwtSecretKey, SignatureAlgorithm.HS256)
+//            .compact()
+//    }
+
+    fun generateToken(user: User): String {
+        return jwtUtil.generateToken(
+            org.springframework.security.core.userdetails.User(
+                user.email,
+                user.password,
+                listOf(SimpleGrantedAuthority("ROLE_${user.role}"))
+            )
+        )
     }
-    
 }
