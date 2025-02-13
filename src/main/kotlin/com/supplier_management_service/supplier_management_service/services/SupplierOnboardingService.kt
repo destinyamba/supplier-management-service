@@ -5,6 +5,7 @@ import com.supplier_management_service.supplier_management_service.dtos.response
 import com.supplier_management_service.supplier_management_service.dtos.response.SupplierResponse
 import com.supplier_management_service.supplier_management_service.models.Supplier
 import com.supplier_management_service.supplier_management_service.repositories.SupplierRepository
+import com.supplier_management_service.supplier_management_service.repositories.UserRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -14,7 +15,8 @@ import org.springframework.web.multipart.MultipartFile
 class SupplierOnboardingService(
     private val supplierRepository: SupplierRepository,
     private val azureBlobStorageService: AzureBlobStorageService,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val userRepository: UserRepository
 ) {
     private val logger: Logger = LoggerFactory.getLogger(SupplierOnboardingService::class.java)
     
@@ -62,6 +64,14 @@ class SupplierOnboardingService(
     fun onboardSupplier(supplierJson: String, files: Map<String, MultipartFile?>): Supplier {
         val supplierDto = objectMapper.readValue(supplierJson, Supplier::class.java)
         val savedSupplier = supplierRepository.save(supplierDto)
+
+        // using supplierJson primaryContactEmail, find user and update UserDetails organization to supplierName
+        val user = userRepository.findByEmail(supplierDto.contactInfo.primaryContact.primaryContactEmail)
+        logger.info("user: $user")
+        // update user organization to supplierDta supplier name
+        user?.organizationName = supplierDto.supplierName
+        logger.info("updated user: $user")
+        userRepository.save(user!!)
 
         // Upload files and update supplier
         files.forEach { (documentType, file) ->

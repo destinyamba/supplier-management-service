@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface SupplierRepository : MongoRepository<Supplier, String> {
     fun findBySupplierName(supplierName: String): Supplier?
+    fun findSupplierById(id: String): Supplier?
 }

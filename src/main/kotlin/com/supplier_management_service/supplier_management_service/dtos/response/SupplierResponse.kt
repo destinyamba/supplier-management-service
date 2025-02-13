@@ -29,7 +29,7 @@ data class SupplierResponse(
         revenue = patient.revenue,
         numberOfEmployees = patient.numberOfEmployees,
         contactInfo = patient.contactInfo,
-        businessClassifications = patient.businessClassifications,
+        businessClassifications = patient.businessClassifications.filterValues { it }.keys.toList(),
         safetyAndCompliance = patient.safetyAndCompliance,
     )
 }

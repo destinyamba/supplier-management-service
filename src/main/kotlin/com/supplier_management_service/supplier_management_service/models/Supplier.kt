@@ -1,5 +1,6 @@
 package com.supplier_management_service.supplier_management_service.models
 
+import com.nimbusds.openid.connect.sdk.assurance.evidences.Organization
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
@@ -18,9 +19,10 @@ data class Supplier(
     val revenue: String,
     val numberOfEmployees: String,
     val contactInfo: ContactInfo,
-    val businessClassifications: List<String> = emptyList(),
+    val businessClassifications: Map<String, Boolean>,
     val safetyAndCompliance: SafetyAndCompliance,
     val isDiscoverable: Boolean = false,
+    var organization: String = supplierName,
 )
 
 data class ContactInfo(

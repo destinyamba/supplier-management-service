@@ -55,6 +55,7 @@ class AuthService(
             name = request.name,
             role = Role.ADMIN,
             businessType = request.businessType
+
         )
 
         val savedUser = userRepository.save(user)
@@ -66,7 +67,8 @@ class AuthService(
             role = savedUser.role,
             businessType = savedUser.businessType,
             createdAt = savedUser.createdAt,
-            lastSignIn = savedUser.lastSignIn
+            lastSignIn = savedUser.lastSignIn,
+            token = generateToken(savedUser)
         )
     }
 
@@ -150,17 +152,7 @@ class AuthService(
             throw EmailAlreadyExistsException("Email ${request.email} is already in use")
         }
     }
-
-//    private fun generateToken(user: User): String {
-//        return Jwts.builder()
-//            .setSubject(user.email)
-//            .claim("role", user.role.toString())
-//            .setIssuedAt(Date())
-//            .setExpiration(Date(System.currentTimeMillis() + jwtExpirationMs))
-//            .signWith(jwtSecretKey, SignatureAlgorithm.HS256)
-//            .compact()
-//    }
-
+    
     fun generateToken(user: User): String {
         return jwtUtil.generateToken(
             org.springframework.security.core.userdetails.User(

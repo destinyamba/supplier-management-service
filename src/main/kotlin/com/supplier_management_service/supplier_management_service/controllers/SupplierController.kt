@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/v1/supplier")
+@CrossOrigin(origins = ["http://localhost:3000"])
 class SupplierController(
     val supplierOnboardingService: SupplierOnboardingService,
 ) {
@@ -22,11 +23,11 @@ class SupplierController(
     @PreAuthorize("hasRole('ADMIN') or hasRole('EDITOR')")
     @PostMapping("/onboard-supplier", consumes = ["multipart/form-data"])
     fun onboardSupplier(
-        @RequestParam("supplierData") supplierJson: String,
-        @RequestParam("coi", required = false) coi: MultipartFile?,
-        @RequestParam("safetyProgram", required = false) safetyProgram: MultipartFile?,
-        @RequestParam("oshaLogs", required = false) oshaLogs: MultipartFile?,
-        @RequestParam("bankInfo", required = false) bankInfo: MultipartFile?
+        @RequestPart("supplierData") supplierJson: String,
+        @RequestPart("coi", required = false) coi: MultipartFile?,
+        @RequestPart("safetyProgram", required = false) safetyProgram: MultipartFile?,
+        @RequestPart("oshaLogs", required = false) oshaLogs: MultipartFile?,
+        @RequestPart("bankInfo", required = false) bankInfo: MultipartFile?
     ): ResponseEntity<Supplier> {
         return try {
 

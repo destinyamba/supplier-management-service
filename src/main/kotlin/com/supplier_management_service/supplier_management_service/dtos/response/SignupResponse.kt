@@ -11,5 +11,6 @@ data class SignupResponse(
     val role: Role,
     val businessType: BusinessType,
     val createdAt: LocalDateTime,
-    val lastSignIn: LocalDateTime
+    val lastSignIn: LocalDateTime,
+    val token: String,
 )
