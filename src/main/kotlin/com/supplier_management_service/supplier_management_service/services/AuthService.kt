@@ -12,8 +12,6 @@ import com.supplier_management_service.supplier_management_service.models.Role
 import com.supplier_management_service.supplier_management_service.models.User
 import com.supplier_management_service.supplier_management_service.repositories.PasswordResetTokenRepository
 import com.supplier_management_service.supplier_management_service.repositories.UserRepository
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import org.apache.coyote.BadRequestException
 import org.slf4j.Logger
@@ -28,7 +26,6 @@ import org.springframework.stereotype.Service
 import java.security.Key
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.Date
 import java.util.UUID
 
 @Service
@@ -116,14 +113,17 @@ class AuthService(
     }
 
     fun completePasswordReset(email: String, token: String, newPassword: String) {
+        logger.info("Completing password reset for $email")
         val user = userRepository.findByEmail(email)
             ?: throw BadRequestException("User not found")
 
         val resetToken = user.id?.let { passwordResetTokenRepository.findByUserIdAndToken(it, token) }
             ?: throw BadRequestException("Invalid reset token")
+        logger.info("Reset token found: $resetToken")
 
         if (resetToken.expiryDate.isBefore(Instant.now())) {
             passwordResetTokenRepository.delete(resetToken)
+            logger.info("Token has expired")
             throw BadRequestException("Token has expired")
         }
 
@@ -159,7 +159,8 @@ class AuthService(
                 user.email,
                 user.password,
                 listOf(SimpleGrantedAuthority("ROLE_${user.role}"))
-            )
+            ),
+            user.businessType.value
         )
     }
 }

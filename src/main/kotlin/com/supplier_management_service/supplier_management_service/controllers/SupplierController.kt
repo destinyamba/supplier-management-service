@@ -46,7 +46,7 @@ class SupplierController(
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('EDITOR')")
     @GetMapping("/all")
-    fun allPatients(
+    fun allSuppliers(
         @RequestParam(required = false, defaultValue = "1") pageNum: Int,
         @RequestParam(required = false, defaultValue = "12") pageSize: Int
     ): ResponseEntity<PagedResponse<SupplierResponse>> {

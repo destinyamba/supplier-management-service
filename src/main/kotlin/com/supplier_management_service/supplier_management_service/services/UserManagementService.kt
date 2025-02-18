@@ -18,7 +18,8 @@ class UserManagementService(private val userRepository: UserRepository, private 
                 name = it.name,
                 email = it.email,
                 role = it.role,
-                organizationName = it.organizationName!!
+                organizationName = it.organizationName!!,
+                userType = it.businessType.value
             )
         }
 

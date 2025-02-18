@@ -5,7 +5,6 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered
-import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -67,7 +66,7 @@ class SecurityConfig(
             .cors { it.configurationSource(corsConfigurationSource()) }
             .csrf { it.disable() }
             .authorizeHttpRequests {
-                it.requestMatchers("/api/v1/auth/**", "/api/v1/user-details/**").permitAll()
+                it.requestMatchers("/api/v1/auth/**", "/api/v1/user-details/**", "/api/v1/auth/password-reset").permitAll()
                 it.anyRequest().authenticated()
             }
             .userDetailsService(userDetailsService)
