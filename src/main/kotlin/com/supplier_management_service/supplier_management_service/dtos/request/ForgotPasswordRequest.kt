@@ -4,9 +4,6 @@ import jakarta.validation.constraints.NotBlank
 
 
 data class PasswordResetRequest(
-//    val email: String,
-//    val token: String? = null,
-//    val newPassword: String? = null
     @field:NotBlank(message = "Email is required when token is not provided")
     val email: String?,
     val token: String?,

@@ -4,7 +4,6 @@ import com.supplier_management_service.supplier_management_service.dtos.response
 import com.supplier_management_service.supplier_management_service.dtos.response.SupplierResponse
 import com.supplier_management_service.supplier_management_service.models.Supplier
 import com.supplier_management_service.supplier_management_service.services.SupplierOnboardingService
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -18,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile
 class SupplierController(
     val supplierOnboardingService: SupplierOnboardingService,
 ) {
-    private val logger = LoggerFactory.getLogger(SupplierController::class.java)
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('EDITOR')")
     @PostMapping("/onboard-supplier", consumes = ["multipart/form-data"])
@@ -57,17 +55,6 @@ class SupplierController(
             ResponseEntity(
                 HttpStatus.INTERNAL_SERVER_ERROR
             )
-        }
-    }
-
-    @PreAuthorize("hasRole('ADMIN') or hasRole('EDITOR')")
-    @DeleteMapping("/{id}")
-    fun deleteSupplier(@PathVariable id: String): ResponseEntity<Void> {
-        return try {
-            supplierOnboardingService.deleteSupplier(id)
-            ResponseEntity(HttpStatus.NO_CONTENT)
-        } catch (e: Exception) {
-            ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 

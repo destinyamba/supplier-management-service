@@ -44,14 +44,6 @@ class SupplierOnboardingService(
         )
     }
 
-    fun deleteSupplier(id: String) {
-        return try {
-            supplierRepository.deleteById(id)
-        } catch (e: Exception) {
-            throw RuntimeException("Failed to delete supplier: ${e.message}", e)
-        }
-    }
-
     fun getSupplier(id: String): Supplier {
         return supplierRepository.findById(id).orElseThrow { IllegalArgumentException("Supplier not found") }
     }
@@ -60,7 +52,6 @@ class SupplierOnboardingService(
         return supplierRepository.save(supplier)
     }
 
-    // update onboardSupplier to upload files to azure blob storage and save file links to mongodb.
     fun onboardSupplier(supplierJson: String, files: Map<String, MultipartFile?>): Supplier {
         val supplierDto = objectMapper.readValue(supplierJson, Supplier::class.java)
         val savedSupplier = supplierRepository.save(supplierDto)
@@ -92,22 +83,5 @@ class SupplierOnboardingService(
 
         return supplierRepository.save(savedSupplier)
     }
-
-    // update deleteSupplier to delete files from azure blob storage.
-    fun deleteSupplierv2(id: String) {
-        val supplier = supplierRepository.findById(id).orElseThrow()
-
-        // Delete all associated files
-        listOfNotNull(
-            supplier.safetyAndCompliance.coiUrl,
-            supplier.safetyAndCompliance.safetyProgramUrl,
-            supplier.safetyAndCompliance.oshaLogsUrl,
-            supplier.safetyAndCompliance.bankInfoUrl
-        ).forEach { azureBlobStorageService.deleteFile(it) }
-
-        supplierRepository.deleteById(id)
-    }
-
-    // add update endpoint to update supplier details and files.
-
+    
 }

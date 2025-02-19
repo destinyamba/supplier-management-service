@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository
 interface SupplierRepository : MongoRepository<Supplier, String> {
     fun findBySupplierName(supplierName: String): Supplier?
     fun findSupplierById(id: String): Supplier?
+    fun existsByContactInfoPrimaryContactPrimaryContactEmail(primaryContactEmail: String): Boolean
+    fun findByContactInfo_PrimaryContact_PrimaryContactEmail(primaryContactEmail: String): Supplier?
 }

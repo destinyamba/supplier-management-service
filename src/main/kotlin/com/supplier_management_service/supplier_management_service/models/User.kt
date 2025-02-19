@@ -25,7 +25,7 @@ data class UserDetails(
     val name: String,
     val role: Role,
     val userType: String,
-    var organizationName: String,
+    var organizationName: String? = null,
 )
 
 data class UserRequest(val userEmail: String)

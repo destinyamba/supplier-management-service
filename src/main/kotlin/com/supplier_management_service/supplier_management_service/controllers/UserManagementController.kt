@@ -3,6 +3,7 @@ package com.supplier_management_service.supplier_management_service.controllers
 import com.supplier_management_service.supplier_management_service.models.UserDetails
 import com.supplier_management_service.supplier_management_service.models.UserRequest
 import com.supplier_management_service.supplier_management_service.services.UserManagementService
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/v1/user-details")
 class UserManagementController(private val userManagementService: UserManagementService) {
+    val logger = LoggerFactory.getLogger(UserManagementController::class.java)
 
     @CrossOrigin(origins = ["http://localhost:3000"])
     @PostMapping("/get-user-details")
@@ -20,10 +22,12 @@ class UserManagementController(private val userManagementService: UserManagement
         return try {
             val response = userManagementService.getUserDetails(userEmail.userEmail)
             ResponseEntity.ok(response)
+        } catch (e: IllegalArgumentException) {
+            logger.error("Error user email not found: ${e.message}")
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
         } catch (e: Exception) {
-            ResponseEntity(
-                HttpStatus.INTERNAL_SERVER_ERROR
-            )
+            logger.error("Error occurred while fetching user details: ${e.message}")
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
         }
     }
 

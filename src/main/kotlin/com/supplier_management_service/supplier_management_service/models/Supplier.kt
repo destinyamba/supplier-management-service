@@ -26,7 +26,8 @@ data class Supplier(
 )
 
 data class ContactInfo(
-    val primaryContact: PrimaryContact
+    val primaryContact: PrimaryContact,
+    val secondaryContact: SecondaryContact? = null,
 )
 
 data class SafetyAndCompliance(

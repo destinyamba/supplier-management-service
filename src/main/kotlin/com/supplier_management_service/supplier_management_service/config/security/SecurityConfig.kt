@@ -66,7 +66,7 @@ class SecurityConfig(
             .cors { it.configurationSource(corsConfigurationSource()) }
             .csrf { it.disable() }
             .authorizeHttpRequests {
-                it.requestMatchers("/api/v1/auth/**", "/api/v1/user-details/**", "/api/v1/auth/password-reset").permitAll()
+                it.requestMatchers("/api/v1/auth/**", "/api/v1/user-details/**").permitAll()
                 it.anyRequest().authenticated()
             }
             .userDetailsService(userDetailsService)
