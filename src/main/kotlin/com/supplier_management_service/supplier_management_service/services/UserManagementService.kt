@@ -36,13 +36,20 @@ class UserManagementService(
             )
         }
 
-        // If organizationName is null, try to find and update from client or supplier
-        if (userDetails?.organizationName == null) {
+        updateUserDetailsOrganizationName(userDetails!!, userEmail)
+
+        return userDetails
+    }
+
+    // If organizationName is null, try to find and update from client or supplier
+    private fun updateUserDetailsOrganizationName(userDetails: UserDetails, userEmail: String) {
+        val user = userRepository.findByEmail(userEmail)
+        if (userDetails.organizationName == null) {
             when (user?.businessType) {
                 BusinessType.CLIENT -> {
                     val client = clientRepository.findByContactInfo_PrimaryContact_PrimaryContactEmail(userEmail)
                     client?.let {
-                        userDetails?.organizationName = it.clientName
+                        userDetails.organizationName = it.clientName
                         // Update user entity with organization name
                         user.organizationName = it.clientName
                         userRepository.save(user)
@@ -52,7 +59,7 @@ class UserManagementService(
                 BusinessType.SUPPLIER -> {
                     val supplier = supplierRepository.findByContactInfo_PrimaryContact_PrimaryContactEmail(userEmail)
                     supplier?.let {
-                        userDetails?.organizationName = it.supplierName
+                        userDetails.organizationName = it.supplierName
                         // Update user entity with organization name
                         user.organizationName = it.supplierName
                         userRepository.save(user)
@@ -64,8 +71,6 @@ class UserManagementService(
                 }
             }
         }
-
-        return userDetails
     }
 
     // show list of users in an organization
