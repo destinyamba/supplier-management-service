@@ -17,8 +17,6 @@ class UserManagementService(
     private val logger = LoggerFactory.getLogger(UserManagementService::class.java)
 
     fun getUserDetails(userEmail: String): UserDetails? {
-        logger.info("Fetching user details for $userEmail")
-
         if (userRepository.existsByEmail(userEmail).not()) {
             throw IllegalArgumentException("User not found")
         }

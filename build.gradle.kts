@@ -62,6 +62,8 @@ dependencies {
 
 	// Azure
 	implementation("com.azure:azure-storage-blob:12.25.0")
+	implementation("com.azure:azure-ai-documentintelligence:1.0.0-beta.1")
+
 
 	// Others
 	implementation("org.springframework:spring-context:6.2.1")
@@ -72,7 +74,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.hateoas:spring-hateoas")
 	implementation("org.springframework.data:spring-data-commons")
-//	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("jakarta.persistence:jakarta.persistence-api:2.2.3")
 }
 
 tasks.withType<KotlinCompile> {

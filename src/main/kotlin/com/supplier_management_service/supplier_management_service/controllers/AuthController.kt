@@ -4,6 +4,7 @@ import com.supplier_management_service.supplier_management_service.dtos.request.
 import com.supplier_management_service.supplier_management_service.dtos.response.SignupResponse
 import com.supplier_management_service.supplier_management_service.exceptions.InvalidCredentialsException
 import com.supplier_management_service.supplier_management_service.services.AuthService
+import com.supplier_management_service.supplier_management_service.services.AzureBlobStorageService
 import jakarta.validation.Valid
 import org.apache.coyote.BadRequestException
 import org.springframework.http.ResponseEntity

@@ -14,8 +14,6 @@ class JwtAuthenticationFilter(
     private val userDetailsService: UserDetailsService
 ) : OncePerRequestFilter() {
 
-    private val loggerz = LoggerFactory.getLogger(JwtAuthenticationFilter::class.java)
-
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -29,7 +27,6 @@ class JwtAuthenticationFilter(
 
                 // Load user details using the username
                 val userDetails = userDetailsService.loadUserByUsername(username)
-                loggerz.info("User authority: ${userDetails.authorities}")
 
 
                 // Validate token WITH user details

@@ -23,7 +23,6 @@ class SupplierController(
     fun onboardSupplier(
         @RequestPart("supplierData") supplierJson: String,
         @RequestPart("coi", required = false) coi: MultipartFile?,
-        @RequestPart("safetyProgram", required = false) safetyProgram: MultipartFile?,
         @RequestPart("oshaLogs", required = false) oshaLogs: MultipartFile?,
         @RequestPart("bankInfo", required = false) bankInfo: MultipartFile?
     ): ResponseEntity<Supplier> {
@@ -31,7 +30,6 @@ class SupplierController(
 
             val files = mapOf(
                 "coi" to coi,
-                "safetyProgram" to safetyProgram,
                 "oshaLogs" to oshaLogs,
                 "bankInfo" to bankInfo
             ).filterValues { it != null }

@@ -43,7 +43,6 @@ class AuthService(
     private val logger: Logger = LoggerFactory.getLogger(AuthService::class.java)
 
     fun signup(request: SignupRequest): SignupResponse {
-        logger.info("Signup request received: $request")
         validateSignupRequest(request)
 
         val user = User(

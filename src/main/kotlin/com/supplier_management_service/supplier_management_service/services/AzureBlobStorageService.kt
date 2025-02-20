@@ -31,11 +31,5 @@ class AzureBlobStorageService(
         blobClient.upload(file.inputStream, file.size)
         return blobClient.blobUrl
     }
-
-    fun deleteFile(blobUrl: String) {
-        val blobClient = BlobClientBuilder()
-            .endpoint(blobUrl)
-            .buildClient()
-        blobClient.delete()
-    }
+    
 }
