@@ -17,20 +17,20 @@ data class SupplierResponse(
     val businessClassifications: List<String> = emptyList(),
     val safetyAndCompliance: SafetyAndCompliance,
 ) {
-    constructor(patient: Supplier) : this(
-        id = patient.id.toString(),
-        contractType = patient.contractType,
-        supplierName = patient.supplierName,
-        workStatus = patient.workStatus,
-        requirementsStatus = patient.requirementsStatus,
-        services = patient.services,
-        states = patient.states,
-        yearsOfOperation = patient.yearsOfOperation,
-        revenue = patient.revenue,
-        numberOfEmployees = patient.numberOfEmployees,
-        contactInfo = patient.contactInfo,
-        businessClassifications = patient.businessClassifications.filterValues { it }.keys.toList(),
-        safetyAndCompliance = patient.safetyAndCompliance,
+    constructor(supplier: Supplier) : this(
+        id = supplier.id.toString(),
+        contractType = supplier.contractType,
+        supplierName = supplier.supplierName,
+        workStatus = supplier.workStatus,
+        requirementsStatus = supplier.requirementsStatus,
+        services = supplier.services,
+        states = supplier.states,
+        yearsOfOperation = supplier.yearsOfOperation,
+        revenue = supplier.revenue,
+        numberOfEmployees = supplier.numberOfEmployees,
+        contactInfo = supplier.contactInfo,
+        businessClassifications = supplier.businessClassifications.filterValues { it }.keys.toList(),
+        safetyAndCompliance = supplier.safetyAndCompliance,
     )
 }
 

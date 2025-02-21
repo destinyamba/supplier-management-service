@@ -6,6 +6,7 @@ import com.supplier_management_service.supplier_management_service.dtos.response
 import com.supplier_management_service.supplier_management_service.enums.DocumentType
 import com.supplier_management_service.supplier_management_service.models.RequirementStatus
 import com.supplier_management_service.supplier_management_service.models.Supplier
+import com.supplier_management_service.supplier_management_service.models.WorkStatus
 import com.supplier_management_service.supplier_management_service.repositories.SupplierRepository
 import com.supplier_management_service.supplier_management_service.repositories.UserRepository
 import org.slf4j.Logger
@@ -24,27 +25,35 @@ class SupplierOnboardingService(
     private val docIntelligenceService: DocIntelligenceService
 ) {
     private val logger: Logger = LoggerFactory.getLogger(SupplierOnboardingService::class.java)
-    
+
     fun getAllSuppliers(pageNum: Int, pageSize: Int): PagedResponse<SupplierResponse> {
-        val allPatients = supplierRepository.findAll()
-        val totalPatients = allPatients.size
-        val totalPages = (totalPatients + pageSize - 1) / pageSize
+        // Filter and sort suppliers
+        val allSuppliers = supplierRepository.findAll()
+        val filteredSuppliers = allSuppliers.filter {
+            it.requirementsStatus == RequirementStatus.SUBMITTED && it.workStatus == WorkStatus.APPROVED
+            it.requirementsStatus == RequirementStatus.SUBMITTED || it.workStatus == WorkStatus.APPROVED
+        }
+        val remainingSuppliers = allSuppliers - filteredSuppliers.toSet()
+        val sortedSuppliers = filteredSuppliers + remainingSuppliers
+
+        val totalSuppliers = sortedSuppliers.size
+        val totalPages = (totalSuppliers + pageSize - 1) / pageSize
 
         val startIndex = (pageNum - 1) * pageSize
-        val endIndex = (startIndex + pageSize).coerceAtMost(totalPatients)
-        val paginatedPatients = if (startIndex < totalPatients) {
-            allPatients.subList(startIndex, endIndex)
+        val endIndex = (startIndex + pageSize).coerceAtMost(totalSuppliers)
+        val paginatedSuppliers = if (startIndex < totalSuppliers) {
+            sortedSuppliers.subList(startIndex, endIndex)
         } else {
             emptyList()
         }
 
-        val patientResponses = paginatedPatients.map { SupplierResponse(it) }
+        val supplierResponses = paginatedSuppliers.map { SupplierResponse(it) }
 
         return PagedResponse(
-            suppliers = patientResponses,
+            suppliers = supplierResponses,
             page = pageNum,
             pageSize = pageSize,
-            totalItems = totalPatients,
+            totalItems = totalSuppliers,
             totalPages = totalPages
         )
     }
