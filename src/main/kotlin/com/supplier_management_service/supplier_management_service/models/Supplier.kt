@@ -24,7 +24,7 @@ data class Supplier(
     val businessClassifications: Map<String, Boolean>,
     @Embedded
     val safetyAndCompliance: SafetyAndCompliance,
-    val isDiscoverable: Boolean = false,
+    var isDiscoverable: Boolean = false,
     var organization: String = supplierName,
 )
 
@@ -41,12 +41,9 @@ data class SafetyAndCompliance(
     var oshaLogsUrl: String? = null,
     var bankInfoUrl: String? = null,
     @ElementCollection
-    var submittedDocuments: MutableMap<DocumentType, Boolean> = mutableMapOf()
-) {
-    fun updateDocumentStatus(documentType: DocumentType, isValid: Boolean) {
-        submittedDocuments[documentType] = isValid
-    }
-}
+    var submittedDocuments: MutableMap<DocumentType, Boolean> = mutableMapOf(),
+    var validatedDocuments: Map<DocumentType, Boolean> = emptyMap()
+)
 
 enum class WorkStatus {
     APPROVED,

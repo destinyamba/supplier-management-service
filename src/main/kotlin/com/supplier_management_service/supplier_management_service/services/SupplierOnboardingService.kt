@@ -10,6 +10,7 @@ import com.supplier_management_service.supplier_management_service.repositories.
 import com.supplier_management_service.supplier_management_service.repositories.UserRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -19,7 +20,8 @@ class SupplierOnboardingService(
     private val supplierRepository: SupplierRepository,
     private val azureBlobStorageService: AzureBlobStorageService,
     private val objectMapper: ObjectMapper,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val docIntelligenceService: DocIntelligenceService
 ) {
     private val logger: Logger = LoggerFactory.getLogger(SupplierOnboardingService::class.java)
     
@@ -96,7 +98,9 @@ class SupplierOnboardingService(
             }
         }
 
-        return supplierRepository.findById(currentSupplier.id!!).get()
+        // validate the submitted documents asynchronously.
+        asyncTriggerDocumentAnalysis(currentSupplier.id!!)
+        return currentSupplier
     }
 
     private fun mapDocumentType(documentType: String): DocumentType {
@@ -116,5 +120,20 @@ class SupplierOnboardingService(
         }
     }
 
+    @Async
+    fun asyncTriggerDocumentAnalysis(supplierId: String) {
+        val supplier = supplierRepository.findById(supplierId).orElseThrow()
+        val safety = supplier.safetyAndCompliance
+
+        listOf(
+            safety.coiUrl,
+            safety.oshaLogsUrl,
+            safety.bankInfoUrl
+        ).forEach { url ->
+            if (url != null) {
+                docIntelligenceService.analyzeAndValidateDocument(supplierId, url)
+            }
+        }
+    }
 
 }

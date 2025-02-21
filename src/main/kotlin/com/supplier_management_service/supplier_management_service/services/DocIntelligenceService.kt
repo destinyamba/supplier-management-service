@@ -34,27 +34,32 @@ class DocIntelligenceService(private val supplierRepository: SupplierRepository)
     fun analyzeAndValidateDocument(supplierId: String, documentUrl: String): String {
         val analyzeResult = analyzeDocument(documentUrl)
         val title = analyzeResult.documents[0].fields["title"]?.content ?: "Unknown"
-        val expiryDate = analyzeResult.documents[0].fields["expiry date"]?.content
-        val validation = validateDocument(title, expiryDate)
+        val validation = validateDocument(title)
 
         logger.info("title: $title")
 
         val supplier = supplierRepository.findById(supplierId)
             .orElseThrow { Exception("Supplier not found") }
+        val validatedDocuments = supplier.safetyAndCompliance.validatedDocuments.toMutableMap()
 
-        val submittedDocuments = supplier.safetyAndCompliance.submittedDocuments.toMutableMap()
+
 
         if (validation.documentType != null) {
-            submittedDocuments[validation.documentType] = validation.isValid
-            supplier.safetyAndCompliance.submittedDocuments = submittedDocuments
+            // Update validation status
+            validatedDocuments[validation.documentType] = validation.isValid
+            supplier.safetyAndCompliance.validatedDocuments = validatedDocuments
 
-            // Check if all required documents are submitted and valid
+            // Check if all documents are valid
+            val allValid = DocumentType.entries.all { validatedDocuments[it] == true }
+            if (allValid) {
+                supplier.workStatus = WorkStatus.APPROVED
+                supplier.isDiscoverable = true
+            }
 
             supplierRepository.save(supplier)
-            return "Document processed: ${validation.reason}"
-        } else {
-            return "Rejected: ${validation.reason}"
         }
+
+        return "Document processed: ${validation.reason}"
     }
 
     private fun analyzeDocument(documentUrl: String): AnalyzeResult {
@@ -68,18 +73,14 @@ class DocIntelligenceService(private val supplierRepository: SupplierRepository)
         return analyzeLayoutPoller.finalResult.analyzeResult
     }
 
-    fun validateDocument(title: String, expiryDate: String?): DocumentValidationResult {
+    fun validateDocument(title: String): DocumentValidationResult {
         val type = DocumentType.entries.find { title.contains(it.keyword, ignoreCase = true) }
-
         return when (type) {
-            DocumentType.COI -> {
-                if (expiryDate.isNullOrBlank()) DocumentValidationResult(type, false, "Missing expiry date")
-                else DocumentValidationResult(type, true, "Valid COI document")
-            }
+            DocumentType.COI,
+            DocumentType.OSHA_LOG,
+            DocumentType.BANK_INFO -> DocumentValidationResult(type, true, "Valid")
 
-            DocumentType.BANK_INFO -> DocumentValidationResult(type, true, "Valid Bank Info document")
-            DocumentType.OSHA_LOG -> DocumentValidationResult(type, true, "Valid OSHA Log document")
-            null -> DocumentValidationResult(null, false, "Unknown document type")
+            else -> DocumentValidationResult(null, false, "Unknown document type")
         }
     }
 }
