@@ -26,11 +26,14 @@ class UserManagementService(
         // Create UserDetails with potentially null organizationName
         val userDetails = user?.let {
             UserDetails(
+                id = it.id!!,
                 name = it.name,
                 email = it.email,
                 role = it.role,
                 userType = it.businessType.value,
-                organizationName = it.organizationName
+                organizationName = it.organizationName,
+                lastSignIn = it.lastSignIn,
+                createdAt = it.createdAt
             )
         }
 
@@ -72,5 +75,5 @@ class UserManagementService(
     }
 
     // show list of users in an organization
-    // invite user into an organization
+    // invite user into an organization as an ADMIN user ROLE
 }

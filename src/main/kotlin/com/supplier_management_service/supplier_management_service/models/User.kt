@@ -21,11 +21,14 @@ data class User(
 )
 
 data class UserDetails(
+    val id: String,
     val email: String,
     val name: String,
     val role: Role,
     val userType: String,
     var organizationName: String? = null,
+    var lastSignIn: LocalDateTime,
+    var createdAt: LocalDateTime
 )
 
 data class UserRequest(val userEmail: String)
