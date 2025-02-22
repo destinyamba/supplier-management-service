@@ -26,14 +26,15 @@ class UserManagementService(
         // Create UserDetails with potentially null organizationName
         val userDetails = user?.let {
             UserDetails(
-                id = it.id!!,
+                userId = it.id!!,
                 name = it.name,
                 email = it.email,
                 role = it.role,
                 userType = it.businessType.value,
                 organizationName = it.organizationName,
                 lastSignIn = it.lastSignIn,
-                createdAt = it.createdAt
+                createdAt = it.createdAt,
+                orgId = it.orgId
             )
         }
 
@@ -45,14 +46,16 @@ class UserManagementService(
     // If organizationName is null, try to find and update from client or supplier
     private fun updateUserDetailsOrganizationName(userDetails: UserDetails, userEmail: String) {
         val user = userRepository.findByEmail(userEmail)
-        if (userDetails.organizationName == null) {
+        if (userDetails.organizationName == null || userDetails.orgId == null) {
             when (user?.businessType) {
                 BusinessType.CLIENT -> {
                     val client = clientRepository.findByContactInfo_PrimaryContact_PrimaryContactEmail(userEmail)
                     client?.let {
                         userDetails.organizationName = it.clientName
+                        userDetails.orgId = it.id
                         // Update user entity with organization name
                         user.organizationName = it.clientName
+                        user.orgId = it.id
                         userRepository.save(user)
                     }
                 }
@@ -61,8 +64,10 @@ class UserManagementService(
                     val supplier = supplierRepository.findByContactInfo_PrimaryContact_PrimaryContactEmail(userEmail)
                     supplier?.let {
                         userDetails.organizationName = it.supplierName
+                        userDetails.orgId = it.id
                         // Update user entity with organization name
                         user.organizationName = it.supplierName
+                        user.orgId = it.id
                         userRepository.save(user)
                     }
                 }
@@ -74,6 +79,32 @@ class UserManagementService(
         }
     }
 
-    // show list of users in an organization
+    fun usersUnderOrg(orgId: String): List<UserDetails> {
+        val findSupplier = supplierRepository.findSupplierById(orgId)
+        val findClient = clientRepository.findClientById(orgId)
+        val findUser = userRepository.findByOrgId(orgId)
+
+        val userDetailsList = mutableListOf<UserDetails>()
+
+        findUser.forEach { user ->
+            if (user.orgId == findClient?.id || user.orgId == findSupplier?.id) {
+                val userDetails =
+                    UserDetails(
+                        userId = user.id!!,
+                        name = user.name,
+                        email = user.email,
+                        role = user.role,
+                        userType = user.businessType.value,
+                        organizationName = user.organizationName,
+                        lastSignIn = user.lastSignIn,
+                        createdAt = user.createdAt,
+                        orgId = user.orgId
+                    )
+                userDetailsList.add(userDetails)
+            }
+        }
+        return userDetailsList
+
+    }
     // invite user into an organization as an ADMIN user ROLE
 }

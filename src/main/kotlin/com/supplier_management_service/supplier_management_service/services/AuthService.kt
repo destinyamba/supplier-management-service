@@ -159,7 +159,8 @@ class AuthService(
                 user.password,
                 listOf(SimpleGrantedAuthority("ROLE_${user.role}"))
             ),
-            user.businessType.value
+            user.businessType.value,
+            user.orgId ?: ""
         )
     }
 }

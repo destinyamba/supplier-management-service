@@ -31,4 +31,18 @@ class UserManagementController(private val userManagementService: UserManagement
         }
     }
 
+    @GetMapping("/associated-org-users/{orgId}")
+    fun getAssociatedOrgUsers(@PathVariable orgId: String): ResponseEntity<List<UserDetails?>> {
+        return try {
+            val response = userManagementService.usersUnderOrg(orgId)
+            ResponseEntity.ok(response)
+        } catch (e: IllegalArgumentException) {
+            logger.error("Error: Org ID not found")
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+        } catch (e: Exception) {
+            logger.error("Error fetching users associated with org. ${e.message}")
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
+        }
+    }
+
 }

@@ -3,6 +3,7 @@ package com.supplier_management_service.supplier_management_service.services
 import com.supplier_management_service.supplier_management_service.models.ClientsDTO
 import com.supplier_management_service.supplier_management_service.repositories.ClientRepository
 import com.supplier_management_service.supplier_management_service.repositories.UserRepository
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
@@ -15,7 +16,10 @@ class ClientOnboardingService(private val clientRepository: ClientRepository, pr
         val user = userRepository.findByEmail(clientData.contactInfo.primaryContact.primaryContactEmail)
         user!!.organizationName = clientData.clientName
         userRepository.save(user)
-        return clientRepository.save(clientData)
+        val savedClient = clientRepository.save(clientData)
+        user.orgId = clientData.id
+
+        return savedClient
     }
 
     private fun validateEmailAndClientName(clientData: ClientsDTO) {

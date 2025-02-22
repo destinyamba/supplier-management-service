@@ -20,10 +20,11 @@ class JwtUtil {
         Keys.hmacShaKeyFor(secret.toByteArray())
     }
 
-    fun generateToken(userDetails: UserDetails, businessType: Any): String {
+    fun generateToken(userDetails: UserDetails, businessType: Any, orgId: String): String {
         val claims: Map<String, Any> = mapOf(
             "roles" to userDetails.authorities.map { it.authority },
-            "businessType" to businessType
+            "businessType" to businessType,
+            "orgId" to orgId
         )
 
         return Jwts.builder()

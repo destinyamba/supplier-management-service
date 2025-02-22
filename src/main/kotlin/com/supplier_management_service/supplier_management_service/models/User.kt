@@ -17,18 +17,20 @@ data class User(
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val lastSignIn: LocalDateTime = LocalDateTime.now(),
     var resetToken: String? = null,
-    var organizationName: String? = null
+    var organizationName: String? = null,
+    var orgId: String? = null
 )
 
 data class UserDetails(
-    val id: String,
+    val userId: String,
     val email: String,
     val name: String,
     val role: Role,
     val userType: String,
     var organizationName: String? = null,
     var lastSignIn: LocalDateTime,
-    var createdAt: LocalDateTime
+    var createdAt: LocalDateTime,
+    var orgId: String? = null
 )
 
 data class UserRequest(val userEmail: String)
