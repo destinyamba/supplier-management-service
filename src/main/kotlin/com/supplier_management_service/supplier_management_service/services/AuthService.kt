@@ -1,5 +1,6 @@
 package com.supplier_management_service.supplier_management_service.services
 
+import com.supplier_management_service.supplier_management_service.config.security.JwtUtil
 import com.supplier_management_service.supplier_management_service.dtos.request.PasswordResetToken
 import com.supplier_management_service.supplier_management_service.dtos.request.SigninRequest
 import com.supplier_management_service.supplier_management_service.exceptions.EmailAlreadyExistsException
@@ -11,23 +12,25 @@ import com.supplier_management_service.supplier_management_service.models.Role
 import com.supplier_management_service.supplier_management_service.models.User
 import com.supplier_management_service.supplier_management_service.repositories.PasswordResetTokenRepository
 import com.supplier_management_service.supplier_management_service.repositories.UserRepository
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import org.apache.coyote.BadRequestException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.security.Key
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.Date
 import java.util.UUID
 
 @Service
 class AuthService(
+    private val jwtUtil: JwtUtil,
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
     private val emailService: EmailService,
@@ -40,7 +43,6 @@ class AuthService(
     private val logger: Logger = LoggerFactory.getLogger(AuthService::class.java)
 
     fun signup(request: SignupRequest): SignupResponse {
-        logger.info("Signup request received: $request")
         validateSignupRequest(request)
 
         val user = User(
@@ -49,6 +51,7 @@ class AuthService(
             name = request.name,
             role = Role.ADMIN,
             businessType = request.businessType
+
         )
 
         val savedUser = userRepository.save(user)
@@ -57,14 +60,16 @@ class AuthService(
             id = savedUser.id!!,
             email = savedUser.email,
             name = savedUser.name,
-            role = savedUser.role ?: Role.ADMIN,
+            role = savedUser.role,
             businessType = savedUser.businessType,
             createdAt = savedUser.createdAt,
-            lastSignIn = savedUser.lastSignIn
+            lastSignIn = savedUser.lastSignIn,
+            token = generateToken(savedUser)
         )
     }
 
     fun signin(request: SigninRequest): SigninResponse {
+        logger.info("Signin request received: ${request.email}")
         val user = userRepository.findByEmail(request.email)
             ?: throw InvalidCredentialsException("Invalid email or password")
 
@@ -79,7 +84,7 @@ class AuthService(
             id = user.id!!,
             email = user.email,
             name = user.name,
-            role = user.role ?: Role.ADMIN,
+            role = user.role,
             businessType = user.businessType,
             token = token
         )
@@ -107,14 +112,17 @@ class AuthService(
     }
 
     fun completePasswordReset(email: String, token: String, newPassword: String) {
+        logger.info("Completing password reset for $email")
         val user = userRepository.findByEmail(email)
             ?: throw BadRequestException("User not found")
 
         val resetToken = user.id?.let { passwordResetTokenRepository.findByUserIdAndToken(it, token) }
             ?: throw BadRequestException("Invalid reset token")
+        logger.info("Reset token found: $resetToken")
 
         if (resetToken.expiryDate.isBefore(Instant.now())) {
             passwordResetTokenRepository.delete(resetToken)
+            logger.info("Token has expired")
             throw BadRequestException("Token has expired")
         }
 
@@ -123,19 +131,36 @@ class AuthService(
         passwordResetTokenRepository.delete(resetToken)
     }
 
+    fun loadUserByUsername(username: String): UserDetails {
+        val user = userRepository.findByEmail(username)
+            ?: throw UsernameNotFoundException("User not found with email: $username")
+
+        return org.springframework.security.core.userdetails.User(
+            user.email,
+            user.password,
+            user.getAuthorities()
+        )
+    }
+
+    private fun User.getAuthorities(): Collection<GrantedAuthority> {
+        return listOf(SimpleGrantedAuthority("ROLE_${role.name}"))  // Using ROLE_ prefix
+    }
+
     private fun validateSignupRequest(request: SignupRequest) {
         if (userRepository.existsByEmail(request.email)) {
             throw EmailAlreadyExistsException("Email ${request.email} is already in use")
         }
     }
-
-    private fun generateToken(user: User): String {
-        return Jwts.builder()
-            .setSubject(user.email)
-            .setIssuedAt(Date())
-            .setExpiration(Date(System.currentTimeMillis() + jwtExpirationMs))
-            .signWith(jwtSecretKey, SignatureAlgorithm.HS256)
-            .compact()
-    }
     
+    fun generateToken(user: User): String {
+        return jwtUtil.generateToken(
+            org.springframework.security.core.userdetails.User(
+                user.email,
+                user.password,
+                listOf(SimpleGrantedAuthority("ROLE_${user.role}"))
+            ),
+            user.businessType.value,
+            user.orgId ?: ""
+        )
+    }
 }

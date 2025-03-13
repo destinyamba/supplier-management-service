@@ -16,11 +16,12 @@ class UserDetailsServiceImpl(
     override fun loadUserByUsername(email: String): UserDetails {
         val user = userRepository.findByEmail(email)
             ?: throw UsernameNotFoundException("User not found with email: $email")
-
+        
+        val authority = SimpleGrantedAuthority("ROLE_${user.role}")
         return org.springframework.security.core.userdetails.User(
             user.email,
             user.password,
-            listOf(SimpleGrantedAuthority(user.businessType.toString()))
+            listOf(authority)
         )
     }
 }

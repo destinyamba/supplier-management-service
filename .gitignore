@@ -39,3 +39,6 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+# msc
+.DS_Store

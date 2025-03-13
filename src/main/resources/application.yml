@@ -1,4 +1,8 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 30MB
   mail:
     host: em5737.support@zenflouu.com
     port: 587
@@ -14,7 +18,7 @@ spring:
     api-key: ${SENDGRID_API_KEY}
   data:
     mongodb:
-      uri: mongodb+srv://destiny:nojKSRsW9qI0pKtl@cluster0.b0dfc.mongodb.net/zenflouu-api-db
+      uri: ${MONGODB_URI
       database: zenflouu-api-db
   auth:
     jwt:
@@ -26,6 +30,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  azure:
+    storage:
+      connection-string: ${AZURE_STORAGE_CONNECTION_STRING}
+      account-name: ${AZURE_STORAGE_ACCOUNT_NAME}
+      account-key: ${AZURE_STORAGE_ACCOUNT_KEY}
+      container-name: ${AZURE_STORAGE_COI_CONTAINER_NAME}
 
 application:
   client-origin-url: ${CLIENT_ORIGIN_URL}

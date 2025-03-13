@@ -4,7 +4,9 @@ import com.supplier_management_service.supplier_management_service.dtos.request.
 import com.supplier_management_service.supplier_management_service.dtos.response.SignupResponse
 import com.supplier_management_service.supplier_management_service.exceptions.InvalidCredentialsException
 import com.supplier_management_service.supplier_management_service.services.AuthService
+import com.supplier_management_service.supplier_management_service.services.AzureBlobStorageService
 import jakarta.validation.Valid
+import org.apache.coyote.BadRequestException
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -35,15 +37,23 @@ class AuthController(
 
     @CrossOrigin(origins = ["http://localhost:3000"])
     @PostMapping("/password-reset")
-    fun handlePasswordReset(@RequestBody request: PasswordResetRequest): ResponseEntity<MessageResponse> {
+    fun handlePasswordReset(@Valid @RequestBody request: PasswordResetRequest): ResponseEntity<MessageResponse> {
         return when {
             request.token == null -> {
-                authService.initiatePasswordReset(request.email)
-                ResponseEntity.ok(MessageResponse("Reset instructions sent to ${request.email}"))
+                val email = request.email
+                if (email != null) {
+                    authService.initiatePasswordReset(email)
+                }
+                ResponseEntity.ok(MessageResponse("Reset instructions sent to $email"))
             }
 
             else -> {
-                authService.completePasswordReset(request.email, request.token, request.newPassword!!)
+                val email = request.email
+                val token = request.token
+                val newPassword = request.newPassword ?: throw BadRequestException("New password is required")
+                if (email != null) {
+                    authService.completePasswordReset(email, token, newPassword)
+                }
                 ResponseEntity.ok(MessageResponse("Password reset successfully"))
             }
         }

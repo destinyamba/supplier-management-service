@@ -46,8 +46,6 @@ dependencies {
 	// Auth0
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("com.okta.spring:okta-spring-boot-starter:3.0.7")
-	implementation("org.springframework.security:spring-security-oauth2-client:6.4.2")
-	implementation("org.springframework.security:spring-security-oauth2-resource-server:6.4.2")
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
@@ -62,6 +60,11 @@ dependencies {
 	// SendGrid
 	implementation("com.sendgrid:sendgrid-java:5.0.0-rc.1")
 
+	// Azure
+	implementation("com.azure:azure-storage-blob:12.25.0")
+	implementation("com.azure:azure-ai-documentintelligence:1.0.0-beta.1")
+
+
 	// Others
 	implementation("org.springframework:spring-context:6.2.1")
 	implementation("io.github.cdimascio:dotenv-java:3.0.0")
@@ -71,7 +74,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.hateoas:spring-hateoas")
 	implementation("org.springframework.data:spring-data-commons")
-//	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("jakarta.persistence:jakarta.persistence-api:2.2.3")
 }
 
 tasks.withType<KotlinCompile> {
