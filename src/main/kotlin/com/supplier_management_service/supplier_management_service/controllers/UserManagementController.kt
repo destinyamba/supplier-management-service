@@ -1,5 +1,6 @@
 package com.supplier_management_service.supplier_management_service.controllers
 
+import com.supplier_management_service.supplier_management_service.models.PendingUser
 import com.supplier_management_service.supplier_management_service.models.UserDetails
 import com.supplier_management_service.supplier_management_service.models.UserRequest
 import com.supplier_management_service.supplier_management_service.services.UserManagementService
@@ -41,6 +42,28 @@ class UserManagementController(private val userManagementService: UserManagement
             ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
         } catch (e: Exception) {
             logger.error("Error fetching users associated with org. ${e.message}")
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
+        }
+    }
+
+    @PostMapping("/invite-user-initial")
+    fun inviteUserInitial(@RequestBody pendingUser: PendingUser): ResponseEntity<PendingUser> {
+        return try {
+            val userDetails = userManagementService.inviteUserInitial(pendingUser)
+            ResponseEntity.ok(userDetails)
+        } catch (e: Exception) {
+            logger.error("Error inviting user: ${e.message}")
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
+        }
+    }
+
+    @PostMapping("/invite-user-complete/{email}/{password}")
+    fun inviteUserComplete(@PathVariable email: String, @PathVariable password: String): ResponseEntity<UserDetails> {
+        return try {
+            val userDetails = userManagementService.inviteUserComplete(email, password)
+            ResponseEntity.ok(userDetails)
+        } catch (e: Exception) {
+            logger.error("Error setting user password: ${e.message}")
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
         }
     }

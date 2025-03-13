@@ -1,0 +1,24 @@
+<!-- <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 357.98 123.53"><defs><style>.cls-1{font-size:77.61px;}.cls-1,.cls-2,.cls-3,.cls-4,.cls-5,.cls-6,.cls-7{fill:#1d1d1b;font-family:MyriadPro-Regular, Myriad Pro;}.cls-2{font-size:104.51px;}.cls-3{font-size:107.06px;}.cls-4{font-size:76.74px;}.cls-5{font-size:77.76px;}.cls-6{font-size:101.95px;}.cls-7{font-size:108.26px;}</style></defs><text x="-14.43" y="-46.99"/><text class="cls-1" transform="translate(0 96.76) scale(1.36 1)">Z</text><text class="cls-2" transform="translate(50.93 95.35) scale(1.37 1)">e</text><text class="cls-3" transform="translate(112.35 96.76) scale(0.98 1)">n</text><text class="cls-4" transform="translate(159.6 96.76) scale(1.31 1)">F</text><text class="cls-5" transform="translate(203.7 96.76) scale(0.75 1)">l</text><text class="cls-6" transform="translate(212.4 95.35) scale(1.03 1)">o</text><text class="cls-7" transform="translate(262.6 95.81) scale(0.89 1)">u</text><text class="cls-7" transform="translate(305.03 95.81) scale(0.89 1)">u</text></svg> -->
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 357.98 123.53" width="357.98" height="123.53">
+  <defs>
+    <style>
+      .cls-1{font-size:77.61px;}
+      .cls-1,.cls-2,.cls-3,.cls-4,.cls-5,.cls-6,.cls-7{fill:#1d1d1b;font-family:MyriadPro-Regular, Myriad Pro;}
+      .cls-2{font-size:104.51px;}
+      .cls-3{font-size:107.06px;}
+      .cls-4{font-size:76.74px;}
+      .cls-5{font-size:77.76px;}
+      .cls-6{font-size:101.95px;}
+      .cls-7{font-size:108.26px;}
+    </style>
+  </defs>
+  <text x="-14.43" y="-46.99"/>
+  <text class="cls-1" transform="translate(0 96.76) scale(1.36 1)">Z</text>
+  <text class="cls-2" transform="translate(50.93 95.35) scale(1.37 1)">e</text>
+  <text class="cls-3" transform="translate(112.35 96.76) scale(0.98 1)">n</text>
+  <text class="cls-4" transform="translate(159.6 96.76) scale(1.31 1)">F</text>
+  <text class="cls-5" transform="translate(203.7 96.76) scale(0.75 1)">l</text>
+  <text class="cls-6" transform="translate(212.4 95.35) scale(1.03 1)">o</text>
+  <text class="cls-7" transform="translate(262.6 95.81) scale(0.89 1)">u</text>
+  <text class="cls-7" transform="translate(305.03 95.81) scale(0.89 1)">u</text>
+</svg>

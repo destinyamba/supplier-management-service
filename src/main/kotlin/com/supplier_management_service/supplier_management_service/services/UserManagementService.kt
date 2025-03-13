@@ -1,18 +1,25 @@
 package com.supplier_management_service.supplier_management_service.services
 
 import com.supplier_management_service.supplier_management_service.models.BusinessType
+import com.supplier_management_service.supplier_management_service.models.PendingUser
+import com.supplier_management_service.supplier_management_service.models.User
 import com.supplier_management_service.supplier_management_service.models.UserDetails
 import com.supplier_management_service.supplier_management_service.repositories.ClientRepository
+import com.supplier_management_service.supplier_management_service.repositories.PendingUsersRepository
 import com.supplier_management_service.supplier_management_service.repositories.SupplierRepository
 import com.supplier_management_service.supplier_management_service.repositories.UserRepository
 import org.slf4j.LoggerFactory
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
 class UserManagementService(
     private val userRepository: UserRepository,
     private val supplierRepository: SupplierRepository,
-    private val clientRepository: ClientRepository
+    private val clientRepository: ClientRepository,
+    private val pendingUsersRepository: PendingUsersRepository,
+    private val emailService: EmailService,
+    private val passwordEncoder: PasswordEncoder,
 ) {
     private val logger = LoggerFactory.getLogger(UserManagementService::class.java)
 
@@ -106,5 +113,85 @@ class UserManagementService(
         return userDetailsList
 
     }
+
     // invite user into an organization as an ADMIN user ROLE
+    fun inviteUserInitial(pendingUser: PendingUser): PendingUser {
+        // get org name from org id.
+        val orgName = when (pendingUser.businessType) {
+            BusinessType.CLIENT -> clientRepository.findClientById(pendingUser.orgId)?.clientName
+            BusinessType.SUPPLIER -> supplierRepository.findSupplierById(pendingUser.orgId)?.supplierName
+            null -> {
+                logger.warn("Business type is null for pending user: ${pendingUser.email}")
+                null
+            }
+        }
+
+        // If orgName is still null, throw an error
+        val finalOrgName = orgName ?: throw IllegalArgumentException("Organization not found for ID: ${pendingUser.orgId}")
+
+        // save user details to pending Users collection
+        val updatedPendingUser = pendingUser.copy(orgName = finalOrgName)
+        val savedPendingUser = pendingUsersRepository.save(updatedPendingUser)
+        logger.info("Saved pending user: ${savedPendingUser.email}")
+        // send email with link to set password asynchronously via send grid
+        try {
+            emailService.sendSetPassword(pendingUser.email)
+            logger.info("Sent password reset email to: ${pendingUser.email}")
+        } catch (ex: EmailService.EmailSendException) {
+            logger.error("Failed to send password reset email to ${pendingUser.email}: ${ex.message}")
+            throw ex
+        }
+
+        val pendingUserDetails = PendingUser(
+            email = pendingUser.email,
+            name = pendingUser.name,
+            role = pendingUser.role,
+            orgId = pendingUser.orgId,
+            orgName = finalOrgName,
+            businessType = pendingUser.businessType,
+            createdAt = pendingUser.createdAt,
+            lastSignIn = pendingUser.lastSignIn,
+        )
+
+        return pendingUserDetails
+    }
+
+    fun inviteUserComplete(email: String, password: String): UserDetails? {
+        // check that the email exists in the pending users collection
+        val invitedUser = pendingUsersRepository.findUserByEmail(email)
+
+        // save the password and other user details to the user repository
+        val newUser = invitedUser.businessType?.let {
+            User(
+                id = invitedUser.id,
+                email = invitedUser.email,
+                password = passwordEncoder.encode(password), // assuming the User entity has a password field
+                businessType = it,
+                role = invitedUser.role,
+                organizationName = invitedUser.orgName,
+                orgId = invitedUser.orgId,
+                name = invitedUser.name,
+                lastSignIn = invitedUser.lastSignIn,
+                createdAt = invitedUser.createdAt,
+            )
+        }
+        userRepository.save(newUser!!)
+
+        val savedUser = UserDetails(
+            userId = newUser.id!!,
+            email = newUser.email,
+            userType = newUser.businessType.value,
+            role = newUser.role,
+            organizationName = newUser.organizationName,
+            orgId = newUser.orgId,
+            name = newUser.name,
+            lastSignIn = newUser.lastSignIn,
+            createdAt = newUser.createdAt,
+        )
+
+        // delete pending user
+        pendingUsersRepository.delete(invitedUser)
+
+        return savedUser
+    }
 }
