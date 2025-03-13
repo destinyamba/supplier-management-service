@@ -28,7 +28,10 @@ class EmailService {
             val from = Email().apply { email = "support@zenflouu.com" }
             val to = Email().apply { email = userEmail }
             val subject = "Password Reset Request"
-            val content = Content("text/plain", "This is your reset token: $token")
+            val templatePath = "/Users/destinyamba/Documents/Repos/supplier-management-service/src/main/resources/templates/reset-password.html"
+            var htmlContent = File(templatePath).readText()
+            htmlContent = htmlContent.replace("{{token}}", token)
+            val content = Content("text/html", htmlContent)
             val mail = Mail(from, subject, to, content)
 
             val sg = SendGrid(sendGridApiKey)
