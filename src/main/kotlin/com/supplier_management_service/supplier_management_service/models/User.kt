@@ -9,10 +9,10 @@ import java.time.LocalDateTime
 data class User(
     @Id
     val id: String? = null,
-    val email: String,
+    var email: String,
     var password: String,
-    val name: String,
-    val role: Role,
+    var name: String,
+    var role: Role,
     val businessType: BusinessType,
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val lastSignIn: LocalDateTime = LocalDateTime.now(),

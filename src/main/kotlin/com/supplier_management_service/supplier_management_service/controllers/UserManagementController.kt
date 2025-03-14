@@ -1,8 +1,7 @@
 package com.supplier_management_service.supplier_management_service.controllers
 
-import com.supplier_management_service.supplier_management_service.models.PendingUser
-import com.supplier_management_service.supplier_management_service.models.UserDetails
-import com.supplier_management_service.supplier_management_service.models.UserRequest
+import com.supplier_management_service.supplier_management_service.dtos.request.EditUserRequest
+import com.supplier_management_service.supplier_management_service.models.*
 import com.supplier_management_service.supplier_management_service.services.UserManagementService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -64,6 +63,50 @@ class UserManagementController(private val userManagementService: UserManagement
             ResponseEntity.ok(userDetails)
         } catch (e: Exception) {
             logger.error("Error setting user password: ${e.message}")
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
+        }
+    }
+
+    @DeleteMapping("/delete/user/{userId}")
+    fun deleteUser(@PathVariable userId: String): ResponseEntity<Void> {
+        return try {
+            userManagementService.deleteUser(userId)
+            ResponseEntity.noContent().build()
+        } catch (e: IllegalArgumentException) {
+            logger.error("Error deleting user: ${e.message}")
+            ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+        } catch (e: Exception) {
+            logger.error("Error occurred while deleting user: ${e.message}")
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+        }
+    }
+
+    @PutMapping("/update/user")
+    fun editUser(
+        @RequestBody editUserRequest: EditUserRequest
+    ): ResponseEntity<Void> {
+        return try {
+            userManagementService.editUser(editUserRequest)
+            ResponseEntity.noContent().build()
+        } catch (e: IllegalArgumentException) {
+            logger.error("Error editing user: ${e.message}")
+            ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+        } catch (e: Exception) {
+            logger.error("Error occurred while editing user: ${e.message}")
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+        }
+    }
+
+    @GetMapping("/get-user-details/{userId}")
+    fun getUserDetailsById(@PathVariable userId: String): ResponseEntity<UserDetails?> {
+        return try {
+            val response = userManagementService.getUserById(userId)
+            ResponseEntity.ok(response)
+        } catch (e: IllegalArgumentException) {
+            logger.error("Error user id not found: ${e.message}")
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+        } catch (e: Exception) {
+            logger.error("Error occurred while fetching user details by id: ${e.message}")
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)
         }
     }

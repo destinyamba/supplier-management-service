@@ -1,9 +1,7 @@
 package com.supplier_management_service.supplier_management_service.services
 
-import com.supplier_management_service.supplier_management_service.models.BusinessType
-import com.supplier_management_service.supplier_management_service.models.PendingUser
-import com.supplier_management_service.supplier_management_service.models.User
-import com.supplier_management_service.supplier_management_service.models.UserDetails
+import com.supplier_management_service.supplier_management_service.dtos.request.EditUserRequest
+import com.supplier_management_service.supplier_management_service.models.*
 import com.supplier_management_service.supplier_management_service.repositories.ClientRepository
 import com.supplier_management_service.supplier_management_service.repositories.PendingUsersRepository
 import com.supplier_management_service.supplier_management_service.repositories.SupplierRepository
@@ -194,4 +192,42 @@ class UserManagementService(
 
         return savedUser
     }
+
+    // delete user
+    fun deleteUser(userId: String) {
+        val user = userRepository.findById(userId).orElseThrow { IllegalArgumentException("User not found") }
+        userRepository.delete(user)
+        logger.info("Deleted user with email: $userId")
+    }
+
+    // edit user
+    fun editUser(editUserRequest: EditUserRequest) {
+        val user = userRepository.findById(editUserRequest.userId).orElseThrow { IllegalArgumentException("User not found") }
+
+        editUserRequest.newName?.let { user.name = it }
+        editUserRequest.newEmail?.let { user.email = it }
+        editUserRequest.newRole?.let { user.role = it }
+
+        userRepository.save(user)
+        logger.info("Updated user with _id: ${editUserRequest.userId}")
+    }
+
+    // get user details by id
+    fun getUserById(userId: String): UserDetails? {
+        val user = userRepository.findById(userId).orElseThrow { IllegalArgumentException("User not found") }
+        return user.id?.let {
+            UserDetails(
+                userId = it,
+                email = user.email,
+                name = user.name,
+                role = user.role,
+                userType = user.businessType.value,
+                organizationName = user.organizationName,
+                lastSignIn = user.lastSignIn,
+                createdAt = user.createdAt,
+                orgId = user.orgId
+            )
+        }
+    }
+
 }
