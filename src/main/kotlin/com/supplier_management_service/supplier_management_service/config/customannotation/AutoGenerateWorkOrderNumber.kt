@@ -1,0 +1,5 @@
+package com.supplier_management_service.supplier_management_service.config.customannotation
+
+@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class AutoGenerateWorkOrderNumber
