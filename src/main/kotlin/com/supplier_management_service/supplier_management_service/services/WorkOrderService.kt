@@ -7,12 +7,21 @@ import com.supplier_management_service.supplier_management_service.enums.Region
 import com.supplier_management_service.supplier_management_service.models.WorkOrder
 import com.supplier_management_service.supplier_management_service.repositories.WorkOrderRepository
 import org.springframework.stereotype.Service
+import java.util.Date
+import java.sql.Date as SqlDate
 
 @Service
 class WorkOrderService(private val workOrderRepository: WorkOrderRepository) {
     // create WO
     fun createWorkOrder(workOrder: WorkOrder): WorkOrder {
-        return workOrderRepository.save(workOrder)
+        // convert util.Date to sql.Date for dueDate and startDate
+        val sqlDueDate = convertUtilDateToSqlDate(workOrder.dueDate)
+        val sqlStartDate = convertUtilDateToSqlDate(workOrder.startDate)
+
+        // create a new WorkOrder object with the converted dates
+        val newWorkOrder = sqlDueDate?.let { workOrder.copy(dueDate = it, startDate = sqlStartDate!!) }
+
+        return workOrderRepository.save(newWorkOrder!!)
     }
 
     // view one WO
@@ -24,17 +33,33 @@ class WorkOrderService(private val workOrderRepository: WorkOrderRepository) {
     // view list of WOs by client ID
     fun listOfWOs(pageNum: Int, pageSize: Int, clientId: String): WOPagedResponse<WOResponse> {
         val allWOs = workOrderRepository.findByClientId(clientId)
-        val filteredWOs = allWOs.filter {
-            it.status == ContractStatus.IN_PROGRESS
-        }
-        val remainingWOs = allWOs - filteredWOs.toSet()
-        val sortedWOs = allWOs + remainingWOs
 
+        // Convert dates safely (avoiding nulls in the list)
+        val convertedWOs = allWOs.mapNotNull { wo ->
+            val sqlDueDate = convertUtilDateToSqlDate(wo.dueDate)
+            val sqlStartDate = convertUtilDateToSqlDate(wo.startDate)
+
+            if (sqlDueDate != null && sqlStartDate != null) {
+                wo.copy(dueDate = sqlDueDate, startDate = sqlStartDate)
+            } else {
+                null
+            }
+        }
+
+        // Split the list into IN_PROGRESS and other items
+        val inProgressWOs = convertedWOs.filter { it.status == ContractStatus.IN_PROGRESS }
+        val pendingWOs = convertedWOs.filter { it.status == ContractStatus.PENDING }
+        val otherWOs = convertedWOs.filter { it.status != ContractStatus.IN_PROGRESS && it.status != ContractStatus.PENDING }
+
+        // Concatenate the lists to prioritize IN_PROGRESS
+        val sortedWOs = inProgressWOs + pendingWOs + otherWOs
+
+        // Pagination logic
         val totalWOs = sortedWOs.size
         val totalPages = (totalWOs + pageSize - 1) / pageSize
-
         val startIndex = (pageNum - 1) * pageSize
         val endIndex = (startIndex + pageSize).coerceAtMost(totalWOs)
+
         val paginatedWOs = if (startIndex < totalWOs) {
             sortedWOs.subList(startIndex, endIndex)
         } else {
@@ -157,5 +182,9 @@ class WorkOrderService(private val workOrderRepository: WorkOrderRepository) {
             Region("Londonderry", "LDY", "Northern Ireland"),
             Region("Tyrone", "TYR", "Northern Ireland")
         )
+    }
+
+    private fun convertUtilDateToSqlDate(utilDate: Date?): java.sql.Date? {
+        return utilDate?.let { java.sql.Date(it.time) }
     }
 }

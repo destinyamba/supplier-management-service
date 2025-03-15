@@ -25,7 +25,7 @@ class WorkOrderController(private val workOrderService: WorkOrderService) {
             val savedWorkOrder = workOrderService.createWorkOrder(workOrder)
             ResponseEntity.status(HttpStatus.CREATED).body(savedWorkOrder)
         } catch (e: Exception) {
-            logger.error("Error creating WO: ${e.message}", e)
+            logger.error("Error creating WO: ${e.message}")
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating work order: ${e.message}")
         }
     }
@@ -53,7 +53,7 @@ class WorkOrderController(private val workOrderService: WorkOrderService) {
             val workOrders = workOrderService.listOfWOs(pageNum, pageSize, clientId)
             ResponseEntity.ok(workOrders)
         } catch (e: Exception) {
-            logger.info("Error getting list of work orders.")
+            logger.error("Error getting list of work orders. ${e.message}")
             ResponseEntity(
                 HttpStatus.INTERNAL_SERVER_ERROR
             )
