@@ -8,7 +8,6 @@ import com.supplier_management_service.supplier_management_service.models.WorkOr
 import com.supplier_management_service.supplier_management_service.repositories.WorkOrderRepository
 import org.springframework.stereotype.Service
 import java.util.Date
-import java.sql.Date as SqlDate
 
 @Service
 class WorkOrderService(private val workOrderRepository: WorkOrderRepository) {
@@ -81,6 +80,7 @@ class WorkOrderService(private val workOrderRepository: WorkOrderRepository) {
     fun voidWO(clientId: String, woId: String) {
         val wo = workOrderRepository.findById(woId).orElseThrow { IllegalArgumentException("Work Order not found.") }
         wo.status = ContractStatus.CANCELLED
+        workOrderRepository.save(wo)
     }
 
     // return list of locations
