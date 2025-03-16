@@ -4,6 +4,7 @@ import com.supplier_management_service.supplier_management_service.dtos.response
 import com.supplier_management_service.supplier_management_service.dtos.response.WOResponse
 import com.supplier_management_service.supplier_management_service.enums.ContractStatus
 import com.supplier_management_service.supplier_management_service.enums.Region
+import com.supplier_management_service.supplier_management_service.enums.SupplyChainService
 import com.supplier_management_service.supplier_management_service.models.WorkOrder
 import com.supplier_management_service.supplier_management_service.repositories.WorkOrderRepository
 import org.springframework.stereotype.Service
@@ -85,6 +86,8 @@ class WorkOrderService(private val workOrderRepository: WorkOrderRepository) {
 
     // return list of locations
     fun getAllRegions(): List<Region> = RegionData.regions
+
+    fun getServices(): List<SupplyChainService> = ServiceData.supplyChainServices
 
     object RegionData {
         val regions = listOf(
@@ -181,6 +184,31 @@ class WorkOrderService(private val workOrderRepository: WorkOrderRepository) {
             Region("Fermanagh", "FER", "Northern Ireland"),
             Region("Londonderry", "LDY", "Northern Ireland"),
             Region("Tyrone", "TYR", "Northern Ireland")
+        )
+    }
+
+    object ServiceData {
+        val supplyChainServices = listOf(
+            SupplyChainService("Warehousing", "Storage"),
+            SupplyChainService("Inventory Management", "Storage"),
+            SupplyChainService("Freight Forwarding", "Transportation"),
+            SupplyChainService("Customs Clearance", "Compliance"),
+            SupplyChainService("Procurement", "Sourcing"),
+            SupplyChainService("Supplier Auditing", "Compliance"),
+            SupplyChainService("Packaging and Labeling", "Processing"),
+            SupplyChainService("Last-Mile Delivery", "Transportation"),
+            SupplyChainService("Reverse Logistics", "Returns"),
+            SupplyChainService("Demand Planning", "Planning"),
+            SupplyChainService("Route Optimization", "Technology"),
+            SupplyChainService("Cold Chain Logistics", "Specialized"),
+            SupplyChainService("E-Commerce Fulfillment", "Fulfillment"),
+            SupplyChainService("Drop Shipping", "Fulfillment"),
+            SupplyChainService("Quality Assurance", "Inspection"),
+            SupplyChainService("Supply Chain Analytics", "Technology"),
+            SupplyChainService("Sustainability Consulting", "Consulting"),
+            SupplyChainService("Fleet Management", "Transportation"),
+            SupplyChainService("Custom Product Assembly", "Processing"),
+            SupplyChainService("Integrated Logistics Solutions", "Comprehensive")
         )
     }
 

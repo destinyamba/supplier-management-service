@@ -23,5 +23,6 @@ data class WorkOrder(
     @AutoGenerateWorkOrderNumber
     var workOrderNumber: String? = null,
     val taskDescription: String,
+    val service: String,
 )
 

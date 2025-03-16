@@ -15,6 +15,7 @@ data class WOResponse(
     val projectManager: String,
     val workOrderNumber: String? = null,
     val taskDescription: String,
+    val service: String,
 ) {
     constructor(wo: WorkOrder) : this(
         id = wo.id.toString(),
@@ -26,7 +27,8 @@ data class WOResponse(
         supplierIds = wo.supplierIds,
         projectManager = wo.projectManager!!,
         workOrderNumber = wo.workOrderNumber,
-        taskDescription = wo.taskDescription
+        taskDescription = wo.taskDescription,
+        service = wo.service
     )
 }
 

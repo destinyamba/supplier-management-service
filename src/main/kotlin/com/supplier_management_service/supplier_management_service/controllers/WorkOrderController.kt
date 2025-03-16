@@ -3,6 +3,7 @@ package com.supplier_management_service.supplier_management_service.controllers
 import com.supplier_management_service.supplier_management_service.dtos.response.WOPagedResponse
 import com.supplier_management_service.supplier_management_service.dtos.response.WOResponse
 import com.supplier_management_service.supplier_management_service.enums.Region
+import com.supplier_management_service.supplier_management_service.enums.SupplyChainService
 import com.supplier_management_service.supplier_management_service.models.WorkOrder
 import com.supplier_management_service.supplier_management_service.services.WorkOrderService
 import org.slf4j.LoggerFactory
@@ -80,6 +81,15 @@ class WorkOrderController(private val workOrderService: WorkOrderService) {
             workOrderService.getAllRegions()
         } else {
             workOrderService.getAllRegions().filter { it.country.equals(country, ignoreCase = true) }
+        }
+    }
+
+    @GetMapping("/services")
+    fun getServices(@RequestParam(required = false) category: String?): List<SupplyChainService> {
+        return if (category.isNullOrEmpty()) {
+            workOrderService.getServices()
+        } else {
+            workOrderService.getServices().filter { it.category.equals(category, ignoreCase = true) }
         }
     }
 }
