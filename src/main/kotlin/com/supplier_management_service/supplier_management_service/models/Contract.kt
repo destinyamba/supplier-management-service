@@ -16,8 +16,6 @@ data class WorkOrder(
     val location: String,
     val dueDate: Date,
     val startDate: Date,
-    @Indexed
-    val supplierIds: List<String> = emptyList(),
     val projectManager: String? = null,
     @Indexed(unique = true)
     @AutoGenerateWorkOrderNumber

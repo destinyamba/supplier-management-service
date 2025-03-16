@@ -92,4 +92,22 @@ class WorkOrderController(private val workOrderService: WorkOrderService) {
             workOrderService.getServices().filter { it.category.equals(category, ignoreCase = true) }
         }
     }
+
+    @CrossOrigin(origins = ["http://localhost:3000"])
+    @GetMapping("/supplier/{supplierId}")
+    fun getWorkOrdersBySupplierId(
+        @PathVariable supplierId: String,
+        @RequestParam(required = false, defaultValue = "1") pageNum: Int,
+        @RequestParam(required = false, defaultValue = "12") pageSize: Int
+    ): ResponseEntity<WOPagedResponse<WOResponse>> {
+        return try {
+            val workOrders = workOrderService.getWorkOrdersBySupplierService(pageNum, pageSize, supplierId)
+            ResponseEntity.ok(workOrders)
+        } catch (e: Exception) {
+            logger.error("Error getting list of supplier matched work orders. ${e.message}")
+            ResponseEntity(
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
+        }
+    }
 }

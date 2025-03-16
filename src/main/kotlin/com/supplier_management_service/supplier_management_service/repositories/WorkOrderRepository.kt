@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface WorkOrderRepository : MongoRepository<WorkOrder, String?> {
     fun findByClientId(clientId: String): List<WorkOrder>
+    fun findByServiceIn(services: Set<String>): List<WorkOrder>
 }

@@ -6,12 +6,13 @@ import com.supplier_management_service.supplier_management_service.enums.Contrac
 import com.supplier_management_service.supplier_management_service.enums.Region
 import com.supplier_management_service.supplier_management_service.enums.SupplyChainService
 import com.supplier_management_service.supplier_management_service.models.WorkOrder
+import com.supplier_management_service.supplier_management_service.repositories.SupplierRepository
 import com.supplier_management_service.supplier_management_service.repositories.WorkOrderRepository
 import org.springframework.stereotype.Service
 import java.util.Date
 
 @Service
-class WorkOrderService(private val workOrderRepository: WorkOrderRepository) {
+class WorkOrderService(private val workOrderRepository: WorkOrderRepository, private val supplierRepository: SupplierRepository) {
     // create WO
     fun createWorkOrder(workOrder: WorkOrder): WorkOrder {
         // convert util.Date to sql.Date for dueDate and startDate
@@ -83,6 +84,42 @@ class WorkOrderService(private val workOrderRepository: WorkOrderRepository) {
         wo.status = ContractStatus.CANCELLED
         workOrderRepository.save(wo)
     }
+
+    // get a list of work orders that match supplier service
+    // take in the supplier id, if the suppliers list of services contains the work order service it should add to the list.
+    fun getWorkOrdersBySupplierService(pageNum: Int, pageSize: Int, supplierId: String): WOPagedResponse<WOResponse> {
+        val supplierServices = getSupplierServices(supplierId).toSet()
+        val allWOs = workOrderRepository.findByServiceIn(supplierServices)
+
+        // Pagination logic
+        val totalWOs = allWOs.size
+        val totalPages = (totalWOs + pageSize - 1) / pageSize
+        val startIndex = (pageNum - 1) * pageSize
+        val endIndex = (startIndex + pageSize).coerceAtMost(totalWOs)
+
+        val paginatedWOs = if (startIndex < totalWOs) {
+            allWOs.subList(startIndex, endIndex)
+        } else {
+            emptyList()
+        }
+
+        val wosResponse = paginatedWOs.map { WOResponse(it) }
+
+        return WOPagedResponse(
+            wos = wosResponse,
+            page = pageNum,
+            pageSize = pageSize,
+            totalItems = totalWOs,
+            totalPages = totalPages
+        )
+    }
+
+    private fun getSupplierServices(supplierId: String): List<String> {
+        val supplier = supplierRepository.findById(supplierId)
+            .orElseThrow { IllegalArgumentException("Supplier not found") }
+        return supplier.services
+    }
+
 
     // return list of locations
     fun getAllRegions(): List<Region> = RegionData.regions
