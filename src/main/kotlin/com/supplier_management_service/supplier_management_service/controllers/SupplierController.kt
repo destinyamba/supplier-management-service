@@ -4,6 +4,7 @@ import com.supplier_management_service.supplier_management_service.dtos.response
 import com.supplier_management_service.supplier_management_service.dtos.response.SupplierResponse
 import com.supplier_management_service.supplier_management_service.models.Supplier
 import com.supplier_management_service.supplier_management_service.services.SupplierOnboardingService
+import com.supplier_management_service.supplier_management_service.services.SupplierSearchService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile
 @CrossOrigin(origins = ["http://localhost:3000"])
 class SupplierController(
     val supplierOnboardingService: SupplierOnboardingService,
+    val supplierSearchService: SupplierSearchService
 ) {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('EDITOR')")
@@ -64,6 +66,21 @@ class SupplierController(
             ResponseEntity(supplier, HttpStatus.OK)
         } catch (e: Exception) {
             ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    // search via NLP
+    @GetMapping("/nlp/search")
+    fun searchSuppliers(
+        @RequestParam query: String,
+        @RequestParam(defaultValue = "1") page: Int,
+        @RequestParam(defaultValue = "10") pageSize: Int
+    ): ResponseEntity<PagedResponse<SupplierResponse>> {
+        return try {
+            val suppliers = supplierSearchService.nlpSearchSuppliers(query, page, pageSize)
+            ResponseEntity.ok(suppliers)
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
         }
     }
 }

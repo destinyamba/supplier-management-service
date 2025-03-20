@@ -23,6 +23,10 @@ configurations {
 	compileOnly {
 		extendsFrom(configurations.annotationProcessor.get())
 	}
+
+	all {
+		exclude(group = "commons-logging", module = "commons-logging")
+	}
 }
 
 repositories {
@@ -64,7 +68,11 @@ dependencies {
 	implementation("com.azure:azure-storage-blob:12.25.0")
 	implementation("com.azure:azure-ai-documentintelligence:1.0.0-beta.1")
 
-
+	//	Google NLP
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("com.google.cloud:google-cloud-language:2.0.0")
+	implementation("com.google.auth:google-auth-library-oauth2-http:1.0.0")
+	
 	// Others
 	implementation("org.springframework:spring-context:6.2.1")
 	implementation("io.github.cdimascio:dotenv-java:3.0.0")
