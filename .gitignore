@@ -42,3 +42,6 @@ out/
 
 # msc
 .DS_Store
+
+# Google NLP
+galvanized-opus-454112-g7-da6240fb24d5.json

@@ -60,3 +60,30 @@ enum class RequirementStatus {
     PENDING,
     SUBMITTED,
 }
+
+enum class IBusinessClassification(val displayName: String) {
+    VeteranOwned("Veteran-Owned"),
+    WomanOwned("Woman-Owned"),
+    MinorityOwned("Minority-Owned"),
+    LgbtqOwned("LGBTQ Owned"),
+    DisabilityOwned("Disability-Owned"),
+    SmallBusiness("Small Business"),
+    EconomicallyDisadvantagedWomanOwned("Economically Disadvantaged Woman-Owned"),
+    SmallDisadvantagedBusiness("Small Disadvantaged Business"),
+    NativeAmericanOwned("Native American-Owned"),
+    BCorporation("B Corporation"),
+    RuralOwned("Rural-Owned"),
+    Cooperative("Cooperative"),
+    YouthOwned("Youth-Owned"),
+    ForeignOwned("Foreign-Owned"),
+    PublicBenefitCorporation("Public Benefit Corporation"),
+    SocialEnterprise("Social Enterprise"),
+    FamilyOwned("Family-Owned"),
+    FranchiseBusiness("Franchise Business");
+
+    companion object {
+        fun fromString(value: String): IBusinessClassification? {
+            return entries.firstOrNull { it.displayName.equals(value, ignoreCase = true) }
+        }
+    }
+}

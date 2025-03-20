@@ -36,6 +36,8 @@ spring:
       account-name: ${AZURE_STORAGE_ACCOUNT_NAME}
       account-key: ${AZURE_STORAGE_ACCOUNT_KEY}
       container-name: ${AZURE_STORAGE_COI_CONTAINER_NAME}
+  openai:
+    key: ${OPENAI_KEY}
 
 application:
   client-origin-url: ${CLIENT_ORIGIN_URL}
