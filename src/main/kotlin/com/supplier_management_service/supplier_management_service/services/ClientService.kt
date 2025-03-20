@@ -3,11 +3,10 @@ package com.supplier_management_service.supplier_management_service.services
 import com.supplier_management_service.supplier_management_service.models.ClientsDTO
 import com.supplier_management_service.supplier_management_service.repositories.ClientRepository
 import com.supplier_management_service.supplier_management_service.repositories.UserRepository
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-class ClientOnboardingService(private val clientRepository: ClientRepository, private val userRepository: UserRepository) {
+class ClientService(private val clientRepository: ClientRepository, private val userRepository: UserRepository) {
 
     fun onboardClient(clientData: ClientsDTO): ClientsDTO {
         // validate email and client name
@@ -32,6 +31,17 @@ class ClientOnboardingService(private val clientRepository: ClientRepository, pr
         if (clientRepository.existsByClientName(clientData.clientName)) {
             throw RuntimeException("Client with name ${clientData.clientName} already exists")
         }
+    }
+
+    // add supplier to approved supplier list (ASL)
+    fun addSupplierToList(clientId: String, supplierId: String): ClientsDTO? {
+        // add supplierId to clients suppliers field.
+        val client = clientRepository.findClientById(clientId)
+        if (client != null) {
+            client.suppliers = client.suppliers?.plus(supplierId)
+            clientRepository.save(client)
+        }
+        return client
     }
 
 }

@@ -10,6 +10,7 @@ data class ClientsDTO(
     val contactInfo: ContactInfo,
     val yearsOfOperation: Int,
     var organization: String = clientName,
+    var suppliers: List<String>? = emptyList()
 )
 
 data class PrimaryContact(
