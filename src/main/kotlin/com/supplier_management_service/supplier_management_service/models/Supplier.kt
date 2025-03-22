@@ -11,7 +11,7 @@ import javax.persistence.Embedded
 data class Supplier(
     @Id
     val id: String? = null,
-    val contractType: ContractType? = ContractType.NO_CONTRACT,
+    var contractType: ContractType? = ContractType.NO_CONTRACT,
     val supplierName: String,
     var workStatus: WorkStatus? = WorkStatus.NOT_APPROVED,
     var requirementsStatus: RequirementStatus? = RequirementStatus.PENDING,

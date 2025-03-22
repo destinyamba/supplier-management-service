@@ -1,14 +1,14 @@
 Here are some potential aggregations and data points you can use to create a dashboard for the supplier management service:
 
-1. **Total Number of Suppliers**
+1. **Total Number of Suppliers** +
    - Endpoint: `/api/v1/supplier/all`
    - Aggregation: Count of all suppliers.
 
-2. **Suppliers by Status**
+2. **Suppliers by Status** +
    - Endpoint: `/api/v1/supplier/all`
    - Aggregation: Group suppliers by their status (e.g., active, inactive).
 
-3. **Total Number of Work Orders**
+3. **Total Number of Work Orders** +
    - Endpoint: Create a new endpoint in `WorkOrderController` to get the count of all work orders.
    - Aggregation: Count of all work orders.
 
@@ -16,27 +16,27 @@ Here are some potential aggregations and data points you can use to create a das
    - Endpoint: `/api/v1/workorder/by-client/{clientId}`
    - Aggregation: Group work orders by client ID.
 
-5. **Work Orders by Service Type**
+5. **Work Orders by Service Type** +
    - Endpoint: `/api/v1/workorder/by-service`
    - Aggregation: Group work orders by service type.
 
-6. **Work Orders by Status**
+6. **Work Orders by Status** +
    - Endpoint: Create a new endpoint in `WorkOrderController` to get work orders grouped by status.
    - Aggregation: Group work orders by their status (e.g., pending, completed).
 
-7. **Upcoming Work Orders**
+7. **Upcoming Work Orders** +
    - Endpoint: Create a new endpoint in `WorkOrderController` to get work orders with due dates in the next 30 days.
    - Aggregation: Filter work orders by due date.
 
-8. **Suppliers Onboarded Over Time**
+8. **Suppliers Onboarded Over Time** +
    - Endpoint: `/api/v1/supplier/all`
    - Aggregation: Group suppliers by their onboarding date to show trends over time.
 
-9. **Work Orders by Project Manager**
-   - Endpoint: Create a new endpoint in `WorkOrderController` to get work orders grouped by project manager.
-   - Aggregation: Group work orders by project manager.
+9. **Suppliers by Service** +
+   - Endpoint: Create a new endpoint in `SupplierController` to get suppliers grouped by service.
+   - Aggregation: Group suppliers by service.
 
-10. **Average Time to Complete Work Orders**
+10. **Average Time to Complete Work Orders** +
     - Endpoint: Create a new endpoint in `WorkOrderController` to calculate the average time from start date to due date for completed work orders.
     - Aggregation: Calculate the average duration of completed work orders.
 
