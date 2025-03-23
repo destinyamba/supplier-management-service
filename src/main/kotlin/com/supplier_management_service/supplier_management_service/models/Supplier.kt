@@ -3,6 +3,7 @@ package com.supplier_management_service.supplier_management_service.models
 import com.supplier_management_service.supplier_management_service.enums.DocumentType
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
+import java.time.LocalDate
 import javax.persistence.ElementCollection
 import javax.persistence.Embeddable
 import javax.persistence.Embedded
@@ -26,6 +27,7 @@ data class Supplier(
     val safetyAndCompliance: SafetyAndCompliance,
     var isDiscoverable: Boolean = false,
     var organization: String = supplierName,
+    var onboardingDate: LocalDate?
 )
 
 data class ContactInfo(
