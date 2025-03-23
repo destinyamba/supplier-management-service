@@ -10,6 +10,7 @@ import com.supplier_management_service.supplier_management_service.repositories.
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 
 @Service
 class ClientService(
@@ -61,6 +62,7 @@ class ClientService(
 
             // update the contract type of the copy
             supplierCopy.contractType = contractType
+            supplierCopy.onboardingDate = LocalDate.now()
 
             // add the modified supplier copy to client's suppliers list
             client.suppliers = client.suppliers?.plus(supplierCopy) ?: listOf(supplierCopy)
