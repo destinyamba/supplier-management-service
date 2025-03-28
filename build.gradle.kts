@@ -72,7 +72,10 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.google.cloud:google-cloud-language:2.0.0")
 	implementation("com.google.auth:google-auth-library-oauth2-http:1.0.0")
-	
+
+	//	Swagger Docs
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
+
 	// Others
 	implementation("org.springframework:spring-context:6.2.1")
 	implementation("io.github.cdimascio:dotenv-java:3.0.0")
