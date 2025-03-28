@@ -65,8 +65,20 @@ class SecurityConfig(
         http
             .cors { it.configurationSource(corsConfigurationSource()) }
             .csrf { it.disable() }
+            .headers { headers ->
+                headers.contentSecurityPolicy { csp ->
+                    csp.policyDirectives("default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com")
+                }
+            }
             .authorizeHttpRequests {
-                it.requestMatchers("/api/v1/auth/**", "/api/v1/user-details/**", "/api/v1/doc-intelligence/**").permitAll()
+                it.requestMatchers(
+                    "/api/v1/auth/**",
+                    "/api/v1/user-details/**",
+                    "/api/v1/doc-intelligence/**",
+                    "/swagger-ui.html",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**"
+                ).permitAll()
                 it.anyRequest().authenticated()
             }
             .userDetailsService(userDetailsService)
