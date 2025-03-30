@@ -31,6 +31,8 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url = uri("https://repo1.maven.org/maven2/") }
+	maven { url = uri("https://maven.java.net/content/groups/public/") }
 }
 
 dependencies {
@@ -46,6 +48,7 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
+	testImplementation("org.springframework.security:spring-security-test:6.4.4")
 
 	// Auth0
 	implementation("org.springframework.boot:spring-boot-starter-security")
@@ -86,6 +89,8 @@ dependencies {
 	implementation("org.springframework.hateoas:spring-hateoas")
 	implementation("org.springframework.data:spring-data-commons")
 	implementation("jakarta.persistence:jakarta.persistence-api:2.2.3")
+	implementation("org.hibernate.validator:hibernate-validator:8.0.0.Final")
+	implementation("org.glassfish:jakarta.el:4.0.2")
 }
 
 tasks.withType<KotlinCompile> {

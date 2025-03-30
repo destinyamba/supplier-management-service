@@ -111,7 +111,6 @@ class MetricsService(private val clientRepository: ClientRepository, private val
                     ContractStatus.IN_PROGRESS -> inProgressCount++
                     ContractStatus.COMPLETED -> completedCount++
                     ContractStatus.CANCELLED -> cancelledCount++
-                    else -> {}
                 }
             }
         }

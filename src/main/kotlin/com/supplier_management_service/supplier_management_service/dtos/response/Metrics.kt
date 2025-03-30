@@ -1,5 +1,6 @@
 package com.supplier_management_service.supplier_management_service.dtos.response
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
 
 data class RequirementStatusMetric(
@@ -8,8 +9,8 @@ data class RequirementStatusMetric(
 )
 
 data class WorkStatusMetric(
-    val approved: Int,
-    val notApproved: Int
+    @JsonProperty("approved") val approved: Int,
+    @JsonProperty("notApproved") val notApproved: Int
 )
 
 data class ContractTypeMetric(
@@ -35,6 +36,6 @@ data class AverageCompletionTrend(
 )
 
 data class ServiceTypeMetric(
-    val serviceType: String,
-    val count: Int
+    @JsonProperty("serviceType") val serviceType: String,
+    @JsonProperty("count") val count: Int
 )

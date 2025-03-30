@@ -49,13 +49,6 @@ class JwtUtil {
         return (username == userDetails.username) && !isTokenExpired(token)
     }
 
-
-    fun getRolesFromToken(token: String): List<String> {
-        return extractClaim(token) {
-            it.body["roles"] as List<String>
-        } ?: emptyList()
-    }
-
     private fun <T> extractClaim(token: String, claimsResolver: (Jws<Claims>) -> T): T? {
         return try {
             val claims = Jwts.parserBuilder()
