@@ -5,7 +5,6 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.6"
 	kotlin("jvm") version "1.9.22"
 	kotlin("plugin.spring") version "1.9.22"
-	id("org.sonarqube") version "4.4.1.3373"
 }
 
 tasks.bootJar {
@@ -103,12 +102,4 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
-}
-
-sonarqube {
-	properties {
-		property("sonar.projectKey", "your-project-key")
-		property("sonar.organization", "your-organization")
-		property("sonar.host.url", "https://sonarcloud.io")
-	}
 }
