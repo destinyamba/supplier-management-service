@@ -5,6 +5,8 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.6"
 	kotlin("jvm") version "1.9.22"
 	kotlin("plugin.spring") version "1.9.22"
+	id("io.gitlab.arturbosch.detekt") version "1.23.1"
+	id("io.gatling.gradle") version "3.13.5.2"
 }
 
 tasks.bootJar {
@@ -31,6 +33,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	gradlePluginPortal()
 	maven { url = uri("https://repo1.maven.org/maven2/") }
 	maven { url = uri("https://maven.java.net/content/groups/public/") }
 }
@@ -79,6 +82,10 @@ dependencies {
 	//	Swagger Docs
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
 
+	// Gatling
+	implementation("io.gatling.highcharts:gatling-charts-highcharts:3.13.5")
+	implementation("io.gatling:gatling-app:3.13.5")
+
 	// Others
 	implementation("org.springframework:spring-context:6.2.1")
 	implementation("io.github.cdimascio:dotenv-java:3.0.0")
@@ -91,6 +98,7 @@ dependencies {
 	implementation("jakarta.persistence:jakarta.persistence-api:2.2.3")
 	implementation("org.hibernate.validator:hibernate-validator:8.0.0.Final")
 	implementation("org.glassfish:jakarta.el:4.0.2")
+	implementation("org.scala-lang:scala-library:2.12.18")
 }
 
 tasks.withType<KotlinCompile> {
@@ -102,4 +110,8 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+detekt {
+	config.setFrom(files("/Users/destinyamba/Documents/Repos/supplier-management-service/detekt.yml"))
 }

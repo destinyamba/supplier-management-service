@@ -67,7 +67,10 @@ class SecurityConfig(
             .csrf { it.disable() }
             .headers { headers ->
                 headers.contentSecurityPolicy { csp ->
-                    csp.policyDirectives("default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com")
+                    csp.policyDirectives(
+                        "default-src 'self'; " +
+                                "img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
+                    )
                 }
             }
             .authorizeHttpRequests {
@@ -77,7 +80,8 @@ class SecurityConfig(
                     "/api/v1/doc-intelligence/**",
                     "/swagger-ui.html",
                     "/swagger-ui/**",
-                    "/v3/api-docs/**"
+                    "/v3/api-docs/**",
+                    "/api/v1/metrics/**"
                 ).permitAll()
                 it.anyRequest().authenticated()
             }
