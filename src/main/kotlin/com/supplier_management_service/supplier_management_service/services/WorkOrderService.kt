@@ -120,6 +120,23 @@ class WorkOrderService(private val workOrderRepository: WorkOrderRepository, pri
         return supplier.services
     }
 
+    // only a supplier can set work order status to IN_PROGRESS or COMPLETED.
+    // once status is set to completed it cannot be updated again.
+    fun updateWorkOrderStatus(workOrderId: String, newStatus: ContractStatus): WorkOrder {
+        val workOrder = workOrderRepository.findById(workOrderId)
+            .orElseThrow { IllegalArgumentException("Work Order not found") }
+
+        require(workOrder.status != ContractStatus.COMPLETED) {
+            "Cannot update a completed work order"
+        }
+
+        require(newStatus == ContractStatus.IN_PROGRESS || newStatus == ContractStatus.COMPLETED) {
+            "Invalid status update"
+        }
+
+        workOrder.status = newStatus
+        return workOrderRepository.save(workOrder)
+    }
 
     // return list of locations
     fun getAllRegions(): List<Region> = RegionData.regions

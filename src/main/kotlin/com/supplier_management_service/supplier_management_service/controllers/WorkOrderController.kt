@@ -2,6 +2,7 @@ package com.supplier_management_service.supplier_management_service.controllers
 
 import com.supplier_management_service.supplier_management_service.dtos.response.WOPagedResponse
 import com.supplier_management_service.supplier_management_service.dtos.response.WOResponse
+import com.supplier_management_service.supplier_management_service.enums.ContractStatus
 import com.supplier_management_service.supplier_management_service.enums.Region
 import com.supplier_management_service.supplier_management_service.enums.SupplyChainService
 import com.supplier_management_service.supplier_management_service.models.WorkOrder
@@ -108,6 +109,27 @@ class WorkOrderController(private val workOrderService: WorkOrderService) {
             ResponseEntity(
                 HttpStatus.INTERNAL_SERVER_ERROR
             )
+        }
+    }
+
+
+    @PutMapping("update/status")
+    fun updateWorkOrderStatus(
+        @RequestParam workOrderId: String,
+        @RequestParam newStatus: String
+    ): ResponseEntity<Any> {
+        return try {
+            val updatedWorkOrder = workOrderService.updateWorkOrderStatus(
+                workOrderId, ContractStatus.valueOf(newStatus)
+            )
+            ResponseEntity.ok(updatedWorkOrder)
+        } catch (e: IllegalArgumentException) {
+            logger.error("Cannot Update Completed Work Order: ${e.message}")
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mapOf("error" to e.message))
+        } catch (e: Exception) {
+            logger.error("Error updating work order status: ${e.message}")
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(mapOf("error" to "An unexpected error occurred."))
         }
     }
 }
